@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<robot  name="tbm" >
+ <link  name="world" />
+ <joint  type="fixed"  name="world_tbm_joint" >
+  <origin  xyz="0 0 0"  rpy="0 0 0" />
+  <parent  link="world" />
+  <child  link="tbm_link_0" />
+ </joint>
+ <link  name="tbm_link_0" >
+  <inertial >
+   <origin  xyz="0 0 0"  rpy="0.0 0.0 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="prismatic"  name="tbm_joint_1" >
+  <parent  link="tbm_link_0" />
+  <child  link="tbm_link_1" />
+  <origin  xyz="0.45499999999999996 0.0 0.0"  rpy="-1.5707963267948966 0.0 -1.5707963267948966" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="0"  upper="3.01" />
+ </joint>
+ <link  name="tbm_link_1" >
+  <inertial >
+   <origin  xyz="0 0 0"  rpy="1.5707963267948966 -1.5707963267948966 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_2" >
+  <parent  link="tbm_link_1" />
+  <child  link="tbm_link_2" />
+  <origin  xyz="0.0 -0.2575 0.0"  rpy="1.5707963267948966 0.0 0.0" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-1.0471975511965976"  upper="1.0471975511965976" />
+ </joint>
+ <link  name="tbm_link_2" >
+  <inertial >
+   <origin  xyz="0.0 0.0 0.0"  rpy="0.0 0.0 1.5707963267948966" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_3" >
+  <parent  link="tbm_link_2" />
+  <child  link="tbm_link_3" />
+  <origin  xyz="0.0 0.572 0.0"  rpy="-1.5707963267948966 -1.5707963267948966 0.0" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-3.141592653589793"  upper="3.141592653589793" />
+ </joint>
+ <link  name="tbm_link_3" >
+  <inertial >
+   <origin  xyz="0.0 0.0 0.0"  rpy="0.0 0.0 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_4" >
+  <parent  link="tbm_link_3" />
+  <child  link="tbm_link_4" />
+  <origin  xyz="0.0 0.0 0.43"  rpy="-0.0 1.5707963267948966 0.0" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-1.5707963267948966"  upper="1.5707963267948966" />
+ </joint>
+ <link  name="tbm_link_4" >
+  <inertial >
+   <origin  xyz="0.0 0.0 0.007"  rpy="0.0 0.0 3.141592653589793" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_5" >
+  <parent  link="tbm_link_4" />
+  <child  link="tbm_link_5" />
+  <origin  xyz="-0.5495 0.0 0.0"  rpy="1.5707963267948966 0.0 -1.5707963267948966" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-3.141592653589793"  upper="3.141592653589793" />
+ </joint>
+ <link  name="tbm_link_5" >
+  <inertial >
+   <origin  xyz="0.0 0.0 -0.0485"  rpy="0.0 0.0 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_6" >
+  <parent  link="tbm_link_5" />
+  <child  link="tbm_link_6" />
+  <origin  xyz="0.0 0.0 0.5105"  rpy="-1.5707963267948966 -1.5707963267948966 0.0" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-1.7453292519943295"  upper="1.7453292519943295" />
+ </joint>
+ <link  name="tbm_link_6" >
+  <inertial >
+   <origin  xyz="0.0 0.0 0.0"  rpy="0.0 0.0 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+ <joint  type="revolute"  name="tbm_joint_7" >
+  <parent  link="tbm_link_6" />
+  <child  link="tbm_link_7" />
+  <origin  xyz="0.219 0.0 0.0"  rpy="-1.5707963267948966 0.0 -1.5707963267948966" />
+  <axis  xyz="0 0 1" />
+  <limit  effort="300"  velocity="10"  lower="-6.283185307179586"  upper="6.283185307179586" />
+ </joint>
+ <link  name="tbm_link_7" >
+  <inertial >
+   <origin  xyz="0.0 0.0 0.0"  rpy="0.0 0.0 0.0" />
+   <mass  value="0" />
+   <inertia  ixy="0"  izz="0"  ixz="0"  ixx="0"  iyz="0"  iyy="0" />
+  </inertial>
+  <visual >
+   <origin  xyz="0.0 0.0 0.0" />
+  </visual>
+  <collision >
+   <origin  xyz="0.0 0.0 0.0" />
+  </collision>
+ </link>
+</robot>
