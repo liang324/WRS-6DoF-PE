@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-@Project ：ABB_wrs_hu_sam
+@Project ：WRS-6DoF-PE
 @File    ：robotgrasp_run.py
 @IDE     ：PyCharm
 @Author  ：Yixuan Su

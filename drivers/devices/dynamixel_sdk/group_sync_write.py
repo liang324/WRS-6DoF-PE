@@ -52,7 +52,7 @@ class GroupSyncWrite:
         if dxl_id in self.data_dict:  # dxl_id already exist
             return False
 
-        if len(data) > self.data_length:  # input data is longer than set
+        if len(data) > self.data_length:  # input log_filename is longer than set
             return False
 
         self.data_dict[dxl_id] = data
@@ -72,7 +72,7 @@ class GroupSyncWrite:
         if dxl_id not in self.data_dict:  # NOT exist
             return False
 
-        if len(data) > self.data_length:  # input data is longer than set
+        if len(data) > self.data_length:  # input log_filename is longer than set
             return False
 
         self.data_dict[dxl_id] = data

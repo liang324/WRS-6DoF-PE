@@ -1071,10 +1071,10 @@ class UxbusCmd(object):
         # if ret != 0:
         #     return [XCONF.UxbusState.ERR_NOTTCP] * (rxn + 1)
         # ret = self.send_pend(funcode, rxn * 4, self._GET_TIMEOUT)
-        # data = [0] * (1 + rxn)
-        # data[0] = ret[0]
-        # data[1:rxn+1] = convert.bytes_to_fp32s(ret[1:rxn * 4 + 1], rxn)
-        # return data
+        # log_filename = [0] * (1 + rxn)
+        # log_filename[0] = ret[0]
+        # log_filename[1:rxn+1] = convert.bytes_to_fp32s(ret[1:rxn * 4 + 1], rxn)
+        # return log_filename
 
     def cali_tcp_orient(self, rpy_be, rpy_bt):
         txdata = [rpy_be[i] for i in range(3)]

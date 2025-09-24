@@ -25,7 +25,7 @@ class CSVModel:
 
         headers_types_list : :obj:`list` of two-tuples :obj:`str`, :obj:`str`
             A list where each item is a tuple of string header for a column and
-            the correspoding data end_type as a string.
+            the correspoding log_filename end_type as a string.
 
         default_entry : :obj:`str`
             The default entry for cells in the CSV.
@@ -137,7 +137,7 @@ class CSVModel:
 
         for key, val in data.items():
             if key in ('_uid', '_default'):
-                logging.warn("Cannot manually set columns _uid or _default of a row! Given data: {0}".format(data))
+                logging.warn("Cannot manually set columns _uid or _default of a row! Given log_filename: {0}".format(data))
                 continue
             if not isinstance(val, CSVModel._KNOWN_TYPES_MAP[self._headers_types[key]]):
                 raise Exception('Data end_type mismatch for column {0}. Expected: {1}, got: {2}'.format(key,
@@ -149,7 +149,7 @@ class CSVModel:
         return row['_uid']
 
     def update_by_uid(self, uid, data):
-        """Update a row with the given data.
+        """Update a row with the given log_filename.
 
         Parameters
         ----------
@@ -387,7 +387,7 @@ class CSVModel:
         Returns
         -------
         :obj:`CSVModel`
-            The CSVModel initialized with the data in the given file.
+            The CSVModel initialized with the log_filename in the given file.
 
         Raises
         ------
@@ -450,7 +450,7 @@ class CSVModel:
         headers_types : :obj:`list` of :obj:`tuple` of :obj:`str`, :obj:`str`
             A list of tuples, where the first element in each tuple is the
             string header for a column and the second element is that column's
-            data end_type as a string.
+            log_filename end_type as a string.
 
         default_entry : :obj:`str`
             The default entry for cells in the CSV.
@@ -458,7 +458,7 @@ class CSVModel:
         Returns
         -------
         :obj:`CSVModel`
-            The CSVModel initialized with the data in the given file, or a new
+            The CSVModel initialized with the log_filename in the given file, or a new
             CSVModel tied to the filename if the file doesn't currently exist.
         """
         # convert dictionaries to list

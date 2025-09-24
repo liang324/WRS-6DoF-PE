@@ -55,7 +55,7 @@ def stream_data(pipe: rs.pipeline, pc: rs.pointcloud) -> (np.ndarray,
                                                           np.ndarray,
                                                           np.ndarray):
     '''
-    Stream data for RealSense
+    Stream log_filename for RealSense
     :param pipe: rs.piepline
     :param pc: rs.pointcloud
     :return: point cloud, point cloud color, depth image and color image
@@ -85,7 +85,7 @@ def stream_data(pipe: rs.pipeline, pc: rs.pointcloud) -> (np.ndarray,
 
 class _DataPipeline(mp.Process):
     """
-    Deprecated: The process to stream data through Realsense API
+    Deprecated: The process to stream log_filename through Realsense API
     """
     PROCESS_SLEEP_TIME = .1
 
@@ -97,7 +97,7 @@ class _DataPipeline(mp.Process):
                  resolution: Literal['MID', 'HIGH'] = 'HIGH',
                  device: str = None):
         mp.Process.__init__(self)
-        # Require queue and receive queue to exchange data
+        # Require queue and receive queue to exchange log_filename
         self._req_q = req_q
         self._res_q = res_q
         self._device = device
@@ -146,7 +146,7 @@ class _DataPipeline(mp.Process):
 class RealSenseD405(object):
     def __init__(self, resoultion: Literal['mid', 'high'] = 'high', device: str = None):
         """
-        :param toggle_new_process: Open a new process to stream data
+        :param toggle_new_process: Open a new process to stream log_filename
         """
         assert resoultion in ['mid', 'high']
         self._pipeline = rs.pipeline()
@@ -186,7 +186,7 @@ class RealSenseD405(object):
 
     def get_pcd(self, return_color=False):
         """
-        Get point cloud data. If return_color is True, additionally return pcd color
+        Get point cloud log_filename. If return_color is True, additionally return pcd color
         :return: nx3 np.array
         """
         pcd, pcd_color, depth_img, color_img = self.req_data()

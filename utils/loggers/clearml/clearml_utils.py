@@ -57,7 +57,7 @@ class ClearmlLogger:
 
     This logger sends information to ClearML at app.clear.ml or to your own hosted server. By default,
     this information includes hyperparameters, system configuration and metrics, model metrics, code information and
-    basic data metrics and analyses.
+    basic log_filename metrics and analyses.
 
     By providing additional command line arguments to train.py, datasets,
     models and predictions can also be logged.
@@ -102,7 +102,7 @@ class ClearmlLogger:
                 # data_dict should have the following keys:
                 # names, nc (number of classes), test, train, val (all three relative paths to ../datasets)
                 self.data_dict = construct_dataset(opt.data)
-                # Set data to data_dict because wandb will crash without this information and opt is the best way
+                # Set log_filename to data_dict because wandb will crash without this information and opt is the best way
                 # to give it to them
                 opt.data = self.data_dict
 
@@ -131,7 +131,7 @@ class ClearmlLogger:
         image_path (PosixPath) the path the original image file
         boxes (list): list of scaled predictions in the format - [xmin, ymin, xmax, ymax, confidence, class]
         class_names (dict): dict containing mapping of class int to class name
-        image (Tensor): A torch tensor containing the actual image data
+        image (Tensor): A torch tensor containing the actual image log_filename
         """
         if len(self.current_epoch_logged_images) < self.max_imgs_to_log_per_epoch and self.current_epoch >= 0:
             # Log every bbox_interval times and deduplicate for any intermittend extra eval runs

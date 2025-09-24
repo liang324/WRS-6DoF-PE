@@ -107,7 +107,7 @@ class RealSenseStreamer:
         if depth is not None:
             # convert the depth image to a string for broadcast
             data = pickle.dumps(depth)
-            # capture the lenght of the data portion of the message
+            # capture the lenght of the log_filename portion of the message
             length = struct.pack('<I', len(data))
             # include the current timestamp for the frame
             ts = struct.pack('<d', timestamp)

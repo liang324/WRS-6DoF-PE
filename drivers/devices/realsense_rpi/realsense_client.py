@@ -74,7 +74,7 @@ class EtherSenseClient(ab.AsyncClient):
         self.timestamp = struct.unpack('<d', await self.reader.read(8))
         self.remainingBytes = self.frame_length
         while self.remainingBytes != 0:
-            # request the frame data until the frame is completely in buffer
+            # request the frame log_filename until the frame is completely in buffer
             data = await self.reader.read(self.remainingBytes)
             self.buffer += data
             self.remainingBytes -= len(data)
@@ -82,19 +82,19 @@ class EtherSenseClient(ab.AsyncClient):
         callback()
 
     def handle_img_frame(self):
-        # convert the frame from string to numerical data
+        # convert the frame from string to numerical log_filename
         imdata = pickle.loads(self.buffer)
         self._return_value = cv2.resize(imdata, (0, 0), fx=2, fy=2, interpolation=cv2.INTER_NEAREST)
         self.buffer = bytearray()
 
     def handle_pointcloud_frame(self):
-        # convert the frame from string to numerical data
+        # convert the frame from string to numerical log_filename
         imdata = pickle.loads(self.buffer)
         self._return_value = np.frombuffer(imdata, dtype=np.float32).reshape(-1,3)
         self.buffer = bytearray()
 
     def handle_rgb_pointcloud_frame(self):
-        # convert the frame from string to numerical data
+        # convert the frame from string to numerical log_filename
         imdata = pickle.loads(self.buffer)
         self._return_value = np.frombuffer(imdata, dtype=np.float32).reshape(-1,6)
         self._return_value[:, 3:] = self._return_value[:, 3:]/255.0 # regulate to 0-1

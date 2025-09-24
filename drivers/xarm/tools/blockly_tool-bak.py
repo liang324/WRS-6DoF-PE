@@ -153,18 +153,18 @@ class BlocklyTool(object):
                                          '\'events\': {}, \'variables\': {}, \'quit\': False}')
         if error_exit:
             self._insert_to_file(self.index, '\n\n# Register error/warn changed callback')
-            self._insert_to_file(self.index, 'def error_warn_change_callback(data):')
-            self._insert_to_file(self.index, '    if data and data[\'error_code\'] != 0:')
+            self._insert_to_file(self.index, 'def error_warn_change_callback(log_filename):')
+            self._insert_to_file(self.index, '    if log_filename and log_filename[\'error_code\'] != 0:')
             self._insert_to_file(self.index, '        arm.set_state(4)')
             self._insert_to_file(self.index, '        params[\'quit\'] = True')
-            self._insert_to_file(self.index, '        print(\'err={}, quit\'.format(data[\'error_code\']))')
+            self._insert_to_file(self.index, '        print(\'err={}, quit\'.format(log_filename[\'error_code\']))')
             self._insert_to_file(self.index, '        arm.release_error_warn_changed_callback(error_warn_change_callback)')
             # self._insert_to_file(self.index, '        sys.exit(1)')
             self._insert_to_file(self.index, 'arm.register_error_warn_changed_callback(error_warn_change_callback)')
         if stop_exit:
             self._insert_to_file(self.index, '\n\n# Register state changed callback')
-            self._insert_to_file(self.index, 'def state_changed_callback(data):')
-            self._insert_to_file(self.index, '    if data and data[\'state\'] == 4:')
+            self._insert_to_file(self.index, 'def state_changed_callback(log_filename):')
+            self._insert_to_file(self.index, '    if log_filename and log_filename[\'state\'] == 4:')
             self._insert_to_file(self.index, '        if arm.version_number[0] >= 1 and arm.version_number[1] >= 1 and arm.version_number[2] > 0:')
             self._insert_to_file(self.index, '            params[\'quit\'] = True')
             self._insert_to_file(self.index, '            print(\'state=4, quit\')')
@@ -174,8 +174,8 @@ class BlocklyTool(object):
 
         self._insert_to_file(self.index, '\n\n# Register counter value changed callback')
         self._insert_to_file(self.index, 'if hasattr(arm, \'register_count_changed_callback\'):')
-        self._insert_to_file(self.index, '    def count_changed_callback(data):')
-        self._insert_to_file(self.index, '        print(\'counter val: {}\'.format(data[\'count\']))')
+        self._insert_to_file(self.index, '    def count_changed_callback(log_filename):')
+        self._insert_to_file(self.index, '        print(\'counter val: {}\'.format(log_filename[\'count\']))')
         self._insert_to_file(self.index, '    arm.register_count_changed_callback(count_changed_callback)\n')
 
         self._first_index = self._index

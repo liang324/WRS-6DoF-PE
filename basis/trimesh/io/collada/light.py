@@ -9,7 +9,7 @@ from .xmlutil import etree as ElementTree
 
 
 class Light(DaeObject):
-    """Base light class holding data from <light> tags."""
+    """Base light class holding log_filename from <light> tags."""
 
     @staticmethod
     def load(collada, localscope, node):

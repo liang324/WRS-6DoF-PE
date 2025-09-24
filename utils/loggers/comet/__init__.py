@@ -237,7 +237,7 @@ class CometLogger:
 
             return data_dict
 
-        self.log_asset(self.opt.data, metadata={"type": "data-config-file"})
+        self.log_asset(self.opt.data, metadata={"type": "log_filename-config-file"})
 
         return check_dataset(data_file)
 

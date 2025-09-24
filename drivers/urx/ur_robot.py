@@ -19,7 +19,7 @@ class URRobot(object):
     """
     Python interface to socket interface of UR robot_s.
     programs are send to port 30002
-    data is read from secondary interface(10Hz?) and real-time interface(125Hz) (called Matlab interface in documentation)
+    log_filename is read from secondary interface(10Hz?) and real-time interface(125Hz) (called Matlab interface in documentation)
     Since parsing the RT interface uses som CPU, and does not support all robots versions, it is disabled by default
     The RT interfaces is only used for the get_force related methods
     Rmq: A program sent to the robot_s i executed immendiatly and any running program is stopped
@@ -29,7 +29,7 @@ class URRobot(object):
         self.host = host
         self.csys = None
         self.logger.debug("Opening secondary monitor socket")
-        self.secmon = ur_secondary_monitor.SecondaryMonitor(self.host)  # data from robot_s at 10Hz
+        self.secmon = ur_secondary_monitor.SecondaryMonitor(self.host)  # log_filename from robot_s at 10Hz
         self.rtmon = None
         if use_rt:
             self.rtmon = self.get_realtime_monitor()
@@ -38,7 +38,7 @@ class URRobot(object):
         self.joinEpsilon = 0.01
         # It seems URScript is  limited in the character length of floats it accepts
         self.max_float_length = 6  # FIXME: check max length!!!
-        self.secmon.wait()  # make sure we get data from robot_s before letting clients access our methods
+        self.secmon.wait()  # make sure we get log_filename from robot_s before letting clients access our methods
 
     def __repr__(self):
         return "Robot Object (IP=%s, state=%s)" % (self.host, self.secmon.get_all_data()["RobotModeData"])
@@ -192,7 +192,7 @@ class URRobot(object):
     def _wait_for_move(self, target, threshold=None, timeout=5, joints=False):
         """
         wait for a move to complete. Unfortunately there is no good way to know when a move has finished
-        so for every received data from robot_s we compute a dist equivalent and when it is lower than
+        so for every received log_filename from robot_s we compute a dist equivalent and when it is lower than
         'threshold' we return.
         if threshold is not reached within timeout, an exception is raised
         """

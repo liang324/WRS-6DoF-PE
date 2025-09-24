@@ -20,7 +20,7 @@ class BagOfPoints(object):
         Parameters
         ----------
         data : :obj:`numpy.ndarray` of float
-            The data with which to initialize the collection. Usually is of
+            The log_filename with which to initialize the collection. Usually is of
             shape (dim x #elements).
         frame : :obj:`str`
             The reference frame in which the collection of primitives
@@ -29,12 +29,12 @@ class BagOfPoints(object):
         Raises
         ------
         ValueError
-            If data is not a ndarray or frame is not a string.
+            If log_filename is not a ndarray or frame is not a string.
         """
         if not isinstance(data, np.ndarray):
             raise ValueError('Must initialize bag of points with a numpy ndarray')
         if not isinstance(frame, str) and not isinstance(frame, unicode):
-            raise ValueError('Must provide string name of frame of data')
+            raise ValueError('Must provide string name of frame of log_filename')
 
         self._check_valid_data(data)
         self._data = self._preprocess_data(data)
@@ -42,22 +42,22 @@ class BagOfPoints(object):
 
     @abstractmethod
     def _check_valid_data(self, data):
-        """Checks that the data is valid for the appropriate class end_type.
+        """Checks that the log_filename is valid for the appropriate class end_type.
         """
         pass
 
     def _preprocess_data(self, data):
-        """Converts the data array to the preferred dim x #points structure.
+        """Converts the log_filename array to the preferred dim x #points structure.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray` of float
-            The data to process.
+            The log_filename to process.
 
         Returns
         -------
         :obj:`numpy.ndarray` of float
-            The same data array, but reshapes lists to be dim x 1.
+            The same log_filename array, but reshapes lists to be dim x 1.
         """
         if len(data.shape) == 1: 
             data = data[:,np.newaxis]
@@ -65,7 +65,7 @@ class BagOfPoints(object):
 
     @property
     def shape(self):
-        """:obj:`tuple` of int : The shape of the collection's data matrix.
+        """:obj:`tuple` of int : The shape of the collection's log_filename matrix.
         """
         return self._data.shape
 
@@ -78,13 +78,13 @@ class BagOfPoints(object):
 
     @property
     def data(self):
-        """:obj:`numpy.ndarray` of float : The collection's data matrix.
+        """:obj:`numpy.ndarray` of float : The collection's log_filename matrix.
         """
         return self._data.squeeze()
 
     @property
     def dim(self):
-        """int : The number of entries in the data array along the first
+        """int : The number of entries in the log_filename array along the first
         dimension. By convention, this is the dimension of the elements (usually
         3D).
         """
@@ -92,7 +92,7 @@ class BagOfPoints(object):
 
     @property
     def num_points(self):
-        """int : The number of entries in the data array along the second
+        """int : The number of entries in the log_filename array along the second
         dimenstion. By convention, this is the number of elements in the
         collection.
         """
@@ -105,7 +105,7 @@ class BagOfPoints(object):
         -------
         :obj:`BagOfPoints`
             An objects of the same end_type as the original, with a copy
-            of the data and the same frame.
+            of the log_filename and the same frame.
         """
         return type(self)(self._data.copy(), self._frame)
 
@@ -131,7 +131,7 @@ class BagOfPoints(object):
             raise ValueError('Extension %s not supported for point saves.' %(file_ext))
 
     def load_data(filename):
-        """Loads data from a file.
+        """Loads log_filename from a file.
 
         Parameters
         ----------
@@ -141,7 +141,7 @@ class BagOfPoints(object):
         Returns
         -------
         :obj:`numpy.ndarray` of float
-            The data read from the file.
+            The log_filename read from the file.
 
         Raises
         ------
@@ -210,17 +210,17 @@ class Point(BagOfPoints):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a Nx1 ndarray.
+        """Checks that the incoming log_filename is a Nx1 ndarray.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape.
+            If the log_filename is not of the correct shape.
         """
         if len(data.shape) == 2 and data.shape[1] != 1:
             raise ValueError('Can only initialize Point from a single Nx1 array') 
@@ -234,19 +234,19 @@ class Point(BagOfPoints):
 
     @property
     def x(self):
-        """float : The first element in the point's data array.
+        """float : The first element in the point's log_filename array.
         """
         return self.vector[0]
 
     @property
     def y(self):
-        """float : The second element in the point's data array.
+        """float : The second element in the point's log_filename array.
         """
         return self.vector[1]
 
     @property
     def z(self):
-        """float : The third element in the point's data array.
+        """float : The third element in the point's log_filename array.
         """
         return self.vector[2]
 
@@ -369,12 +369,12 @@ class Point(BagOfPoints):
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create a Point from data saved in a file.
+        """Create a Point from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created point.
@@ -382,7 +382,7 @@ class Point(BagOfPoints):
         Returns
         -------
         :obj:`Point`
-            A point created from the data in the file.
+            A point created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return Point(data, frame)
@@ -403,23 +403,23 @@ class Direction(BagOfVectors):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a Nx1 ndarray.
+        """Checks that the incoming log_filename is a Nx1 ndarray.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape or if the vector is not
+            If the log_filename is not of the correct shape or if the vector is not
             normed.
         """
         if len(data.shape) == 2 and data.shape[1] != 1:
             raise ValueError('Can only initialize Direction from a single Nx1 array') 
         if np.abs(np.linalg.norm(data) - 1.0) > 1e-4:
-            raise ValueError('Direction data must have norm=1.0')
+            raise ValueError('Direction log_filename must have norm=1.0')
 
     def orthogonal_basis(self):
         """Return an orthogonal basis to this motion_vec.
@@ -450,12 +450,12 @@ class Direction(BagOfVectors):
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create a Direction from data saved in a file.
+        """Create a Direction from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created Direction.
@@ -463,7 +463,7 @@ class Direction(BagOfVectors):
         Returns
         -------
         :obj:`Direction`
-            A Direction created from the data in the file.
+            A Direction created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return Direction(data, frame)
@@ -522,7 +522,7 @@ class Plane3D(object):
         below_plane = point_cloud._data - np.tile(self._x0.data, [1, point_cloud.num_points]).T.dot(self._n) <= 0
         below_plane = point_cloud.z_coords > 0 & below_plane
 
-        # split data
+        # split log_filename
         above_data = point_cloud.data[:, above_plane]
         below_data = point_cloud.data[:, below_plane]
         return PointCloud(above_data, point_cloud.frame), PointCloud(below_data, point_cloud.frame)
@@ -544,24 +544,24 @@ class PointCloud(BagOfPoints):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a 3 x #elements ndarray.
+        """Checks that the incoming log_filename is a 3 x #elements ndarray.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape or end_type.
+            If the log_filename is not of the correct shape or end_type.
         """
         if data.dtype.type != np.float32 and data.dtype.type != np.float64:
             raise ValueError('Must initialize point clouds with a numpy float ndarray')
         if data.shape[0] != 3:
-            raise ValueError('Illegal data array passed to point cloud. Must have 3 coordinates')
+            raise ValueError('Illegal log_filename array passed to point cloud. Must have 3 coordinates')
         if len(data.shape) > 2:
-            raise ValueError('Illegal data array passed to point cloud. Must have 1 or 2 dimensions')
+            raise ValueError('Illegal log_filename array passed to point cloud. Must have 1 or 2 dimensions')
 
     @property
     def x_coords(self):
@@ -815,12 +815,12 @@ class PointCloud(BagOfPoints):
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create a PointCloud from data saved in a file.
+        """Create a PointCloud from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created PointCloud.
@@ -828,7 +828,7 @@ class PointCloud(BagOfPoints):
         Returns
         -------
         :obj:`PointCloud`
-            A PointCloud created from the data in the file.
+            A PointCloud created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return PointCloud(data, frame)
@@ -850,28 +850,28 @@ class NormalCloud(BagOfVectors):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a 3 x #elements ndarray of normal
+        """Checks that the incoming log_filename is a 3 x #elements ndarray of normal
         vectors.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape or end_type, or if the vectors
+            If the log_filename is not of the correct shape or end_type, or if the vectors
             therein are not normalized.
         """
         if data.dtype.type != np.float32 and data.dtype.type != np.float64:
             raise ValueError('Must initialize normals clouds with a numpy float ndarray')
         if data.shape[0] != 3:
-            raise ValueError('Illegal data array passed to normal cloud. Must have 3 coordinates')
+            raise ValueError('Illegal log_filename array passed to normal cloud. Must have 3 coordinates')
         if len(data.shape) > 2:
-            raise ValueError('Illegal data array passed to normal cloud. Must have 1 or 2 dimensions')
+            raise ValueError('Illegal log_filename array passed to normal cloud. Must have 1 or 2 dimensions')
         if np.any((np.abs(np.linalg.norm(data, axis=0) - 1) > 1e-4) & (np.linalg.norm(data, axis=0) != 0)):
-            raise ValueError('Illegal data array passed to normal cloud. Must have norm=1.0 or norm=0.0')
+            raise ValueError('Illegal log_filename array passed to normal cloud. Must have norm=1.0 or norm=0.0')
 
     @property
     def x_coords(self):
@@ -940,12 +940,12 @@ class NormalCloud(BagOfVectors):
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create a NormalCloud from data saved in a file.
+        """Create a NormalCloud from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created NormalCloud.
@@ -953,7 +953,7 @@ class NormalCloud(BagOfVectors):
         Returns
         -------
         :obj:`NormalCloud`
-            A NormalCloud created from the data in the file.
+            A NormalCloud created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return NormalCloud(data, frame)
@@ -975,17 +975,17 @@ class ImageCoords(BagOfPoints):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a 2 x #elements ndarray of ints.
+        """Checks that the incoming log_filename is a 2 x #elements ndarray of ints.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape or end_type.
+            If the log_filename is not of the correct shape or end_type.
         """
         if data.dtype.type != np.int8 and data.dtype.type != np.int16 \
                 and data.dtype.type != np.int32 and data.dtype.type != np.int64 \
@@ -993,32 +993,32 @@ class ImageCoords(BagOfPoints):
                 and data.dtype.type != np.uint32 and data.dtype.type != np.uint64:
             raise ValueError('Must initialize image coords with a numpy int ndarray')
         if data.shape[0] != 2:
-            raise ValueError('Illegal data array passed to image coords. Must have 2 coordinates')
+            raise ValueError('Illegal log_filename array passed to image coords. Must have 2 coordinates')
         if len(data.shape) > 2:
-            raise ValueError('Illegal data array passed to point cloud. Must have 1 or 2 dimensions')
+            raise ValueError('Illegal log_filename array passed to point cloud. Must have 1 or 2 dimensions')
 
     @property
     def i_coords(self):
         """:obj:`numpy.ndarray` of float : The set of i-coordinates
-        (those in the second row of the data matrix).
+        (those in the second row of the log_filename matrix).
         """
         return self._data[1,:]
 
     @property
     def j_coords(self):
         """:obj:`numpy.ndarray` of float : The set of j-coordinates
-        (those in the first row of the data matrix).
+        (those in the first row of the log_filename matrix).
         """
         return self._data[0,:]
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create an ImageCoords from data saved in a file.
+        """Create an ImageCoords from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created ImageCoords.
@@ -1026,7 +1026,7 @@ class ImageCoords(BagOfPoints):
         Returns
         -------
         :obj:`ImageCoords`
-            An ImageCoords created from the data in the file.
+            An ImageCoords created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return ImageCoords(data, frame)
@@ -1049,24 +1049,24 @@ class RgbCloud(BagOfPoints):
         BagOfPoints.__init__(self, data, frame)
 
     def _check_valid_data(self, data):
-        """Checks that the incoming data is a 3 x #elements ndarray.
+        """Checks that the incoming log_filename is a 3 x #elements ndarray.
 
         Parameters
         ----------
         data : :obj:`numpy.ndarray`
-            The data to verify.
+            The log_filename to verify.
 
         Raises
         ------
         ValueError
-            If the data is not of the correct shape or end_type.
+            If the log_filename is not of the correct shape or end_type.
         """
         if data.dtype.type != np.uint8:
             raise ValueError('Must initialize rgb clouds with a numpy uint ndarray')
         if data.shape[0] != 3:
-            raise ValueError('Illegal data array passed to rgb cloud. Must have 3 coordinates')
+            raise ValueError('Illegal log_filename array passed to rgb cloud. Must have 3 coordinates')
         if len(data.shape) > 2:
-            raise ValueError('Illegal data array passed to rgb  cloud. Must have 1 or 2 dimensions')
+            raise ValueError('Illegal log_filename array passed to rgb  cloud. Must have 1 or 2 dimensions')
 
     @property
     def red(self):
@@ -1091,12 +1091,12 @@ class RgbCloud(BagOfPoints):
 
     @staticmethod
     def open(filename, frame='unspecified'):
-        """Create a RgbCloud from data saved in a file.
+        """Create a RgbCloud from log_filename saved in a file.
 
         Parameters
         ----------
         filename : :obj:`str`
-            The file to load data from.
+            The file to load log_filename from.
 
         frame : :obj:`str`
             The frame to apply to the created RgbCloud.
@@ -1104,7 +1104,7 @@ class RgbCloud(BagOfPoints):
         Returns
         -------
         :obj:`RgbCloud`
-            A RgdCloud created from the data in the file.
+            A RgdCloud created from the log_filename in the file.
         """
         data = BagOfPoints.load_data(filename)
         return RgbCloud(data, frame)

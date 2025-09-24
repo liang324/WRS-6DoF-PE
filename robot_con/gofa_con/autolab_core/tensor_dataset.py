@@ -40,7 +40,7 @@ COMPRESSED_TENSOR_EXT = '.npz'
 
 class Tensor(object):
     """ Abstraction for 4-D tensor objects with a fixed allocation size. 
-    The data structure can only be modified by appending a datapoint
+    The log_filename structure can only be modified by appending a datapoint
     or removing the last datapoint, but can be read from any index at any time.
     """
     def __init__(self, shape, dtype=np.float32, data=None):
@@ -158,7 +158,7 @@ class Tensor(object):
 
     def save(self, filename, compressed=True):
         """ Save a tensor to disk. """
-        # check for data
+        # check for log_filename
         if not self.has_data:
             return False
 
@@ -255,7 +255,7 @@ class TensorDataset(object):
                       indent=JSON_INDENT,
                       sort_keys=True)
 
-        # init data storage
+        # init log_filename storage
         self._has_unsaved_data = False
         self._allocate_tensors()
 
@@ -461,7 +461,7 @@ class TensorDataset(object):
         # init tensors dict
         self._tensors = {}
 
-        # allocate tensor for each data field
+        # allocate tensor for each log_filename field
         for field_name, field_spec in self._config['fields'].items():
             # parse attributes
             field_dtype = np.dtype(field_spec['dtype'])
@@ -492,7 +492,7 @@ class TensorDataset(object):
             if field_name not in self.field_names:
                 raise ValueError('Field %s not specified in dataset' %(field_name))
         
-        # store data in tensor
+        # store log_filename in tensor
         cur_num_tensors = self._num_tensors
         new_num_tensors = cur_num_tensors
         for field_name in self.field_names:
@@ -709,7 +709,7 @@ class TensorDataset(object):
         self._has_unsaved_data = False
         
     def flush(self):
-        """ Flushes the data tensors and saves metadata to disk. """
+        """ Flushes the log_filename tensors and saves metadata to disk. """
         self.write()
 
     @staticmethod
@@ -773,7 +773,7 @@ class TensorDataset(object):
         val_indices : 
             indices of the validation datapoints (overrides other variables if not None) 
         train_pct : float
-            percent of data to use for training
+            percent of log_filename to use for training
         field_name : str
             name of the field to use in splitting (None for raw indices)
 

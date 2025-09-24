@@ -42,7 +42,7 @@ class DaeObject(object):
     该方法将对象的信息保存回 :attr:`xmlnode` 属性.
     """
     xmlnode = None
-    """ElementTree representation of the data."""
+    """ElementTree representation of the log_filename."""
 
     @staticmethod
     def load(collada, localscope, node):
@@ -93,7 +93,7 @@ class DaeBrokenRefError(DaeError):
 
 
 class DaeMalformedError(DaeError):
-    """Raised when data is found to be corrupted in some way."""
+    """Raised when log_filename is found to be corrupted in some way."""
     pass
 
 

@@ -342,7 +342,7 @@ class k4a:
 
 		"""
 		K4A_EXPORT k4a_buffer_result_t k4a_device_get_raw_calibration(k4a_device_t device_handle,
-																	  uint8_t *data,
+																	  uint8_t *log_filename,
 																	  size_t *data_size);
 		"""
 		self.k4a_device_get_raw_calibration = dll.k4a_device_get_raw_calibration

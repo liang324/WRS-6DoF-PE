@@ -1,11 +1,13 @@
-# -*- coding:utf-8  -*-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 """
-
-Author: Yixuan Su
-Date: 2025/05/27 10:10
-File: camera_utils.py
-Description: 
+@Project ：WRS-6DoF-PE
+@File    ：camera_utils.py
+@IDE     ：PyCharm
+@Author  ：Yixuan Su
+@Date    ：2025/07/11 10:07
+Description:
 
 """
 import datetime
@@ -144,7 +146,7 @@ def capture_point_cloud(save_dir):
 
 
 if __name__ == "__main__":
-    save_dir = "D:\AI\ABB_wrs_hu_sam\suyixuan_sam\Human_Robot_Collaborative_Tube_Grasping\Task3_pose_Estimation\dataset"
+    save_dir = r"D:\AI\WRS-6DoF-PE\robot_grasp\data"
     os.makedirs(save_dir, exist_ok=True)
     color_image, save_colorpath, depth_image, save_depthpath, point_cloud, save_pcdpath = capture_point_cloud(
         save_dir)  # 调用主函数,开始捕获点云

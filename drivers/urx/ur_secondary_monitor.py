@@ -36,16 +36,16 @@ class ParserUtils(object):
 
     def parse(self, data):
         """
-        parse a packet from the UR socket and return a dictionary with the data
+        parse a packet from the UR socket and return a dictionary with the log_filename
         """
         allData = {}
-        # print "Total size ", len(data)
+        # print "Total size ", len(log_filename)
         while data:
             psize, ptype, pdata, data = self.analyze_header(data)
             # print "We got packet with size %i and type %s" % (psize, ptype)
             if ptype == 16:
                 allData["SecondaryClientData"] = self._get_data(pdata, "!iB", ("size", "type"))
-                data = (pdata + data)[5:]  # This is the total size so we resend data to parser
+                data = (pdata + data)[5:]  # This is the total size so we resend log_filename to parser
             elif ptype == 0:
                 # this parses RobotModeData for versions >=3.0 (i.e. 3.0)
                 if psize == 38:
@@ -121,8 +121,8 @@ class ParserUtils(object):
 
     def _get_data(self, data, fmt, names):
         """
-        fill data into a dictionary
-            data is data from robot_s packet
+        fill log_filename into a dictionary
+            log_filename is log_filename from robot_s packet
             fmt is struct format, but with added A for arrays and no support for numerical in fmt
             names args are strings used to store values
         """
@@ -137,7 +137,7 @@ class ParserUtils(object):
                 j += 1
             elif f == "A":  # we got an array
                 # first we need to find its size
-                if j == len(fmt) - 2:  # we are last element, size is the rest of data in packet
+                if j == len(fmt) - 2:  # we are last element, size is the rest of log_filename in packet
                     arraysize = len(tmpdata)
                 else:  # size should be given in last element
                     asn = names[i - 1]
@@ -154,7 +154,7 @@ class ParserUtils(object):
                 fmtsize = struct.calcsize(fmt[j])
                 # print "reading ", f , i, j,  fmtsize, len(tmpdata)
                 if len(tmpdata) < fmtsize:  # seems to happen on windows
-                    raise ParsingException("Error, length of data smaller than advertized: ", len(tmpdata), fmtsize, "for names ", names, f, i, j)
+                    raise ParsingException("Error, length of log_filename smaller than advertized: ", len(tmpdata), fmtsize, "for names ", names, f, i, j)
                 d[names[i]] = struct.unpack("!" + f, tmpdata[0:fmtsize])[0]
                 # print names[i], d[names[i]]
                 tmpdata = tmpdata[fmtsize:]
@@ -174,9 +174,9 @@ class ParserUtils(object):
         else:
             psize, ptype = self.get_header(data)
             if psize < 5:
-                raise ParsingException("Error, declared length of data smaller than its own header(5): ", psize)
+                raise ParsingException("Error, declared length of log_filename smaller than its own header(5): ", psize)
             elif psize > len(data):
-                raise ParsingException("Error, length of data smaller (%s) than declared (%s)" % (len(data), psize))
+                raise ParsingException("Error, length of log_filename smaller (%s) than declared (%s)" % (len(data), psize))
         return psize, ptype, data[:psize], data[psize:]
 
     def find_first_packet(self, data):
@@ -193,7 +193,7 @@ class ParserUtils(object):
                     data = data[1:]
                     counter += 1
                     if counter > limit:
-                        self.logger.warning("tried %s times to find a packet in data, advertised packet size: %s, type: %s", counter, psize, ptype)
+                        self.logger.warning("tried %s times to find a packet in log_filename, advertised packet size: %s, type: %s", counter, psize, ptype)
                         self.logger.warning("Data length: %s", len(data))
                         limit = limit * 10
                 elif len(data) >= psize:
@@ -207,13 +207,13 @@ class ParserUtils(object):
                     self.logger.debug("Packet is not complete, advertised size is %s, received size is %s, type is %s", psize, len(data), ptype)
                     return None
             else:
-                # self.logger.debug("data smaller than 5 bytes")
+                # self.logger.debug("log_filename smaller than 5 bytes")
                 return None
 
 
 class SecondaryMonitor(Thread):
     """
-    Monitor data from secondary port and send programs to robot_s
+    Monitor log_filename from secondary port and send programs to robot_s
     """
     def __init__(self, host):
         Thread.__init__(self)
@@ -233,7 +233,7 @@ class SecondaryMonitor(Thread):
         self.lastpacket_timestamp = 0
 
         self.start()
-        self.wait()  # make sure we got some data before someone calls us
+        self.wait()  # make sure we got some log_filename before someone calls us
 
     def send_program(self, prog):
         """
@@ -254,8 +254,8 @@ class SecondaryMonitor(Thread):
 
     def run(self):
         """
-        check program execution status in the secondary client data packet we get from the robot_s
-        This interface uses only data from the secondary client interface (see UR doc)
+        check program execution status in the secondary client log_filename packet we get from the robot_s
+        This interface uses only log_filename from the secondary client interface (see UR doc)
         Only the last connected client is the primary client,
         so this is not guaranted and we cannot rely on information to the primary client.
         """
@@ -298,7 +298,7 @@ class SecondaryMonitor(Thread):
                     self.logger.error("Robot not running: " + str(self._dict["RobotModeData"]))
                 self.running = False
             with self._dataEvent:
-                # print("X: new data")
+                # print("X: new log_filename")
                 self._dataEvent.notifyAll()
 
     def _get_data(self):
@@ -306,26 +306,26 @@ class SecondaryMonitor(Thread):
         returns something that looks like a packet, nothing is guaranted
         """
         while True:
-            # self.logger.debug("data queue size is: {}".format(len(self._dataqueue)))
+            # self.logger.debug("log_filename queue size is: {}".format(len(self._dataqueue)))
             ans = self._parser.find_first_packet(self._dataqueue[:])
             if ans:
                 self._dataqueue = ans[1]
                 # self.logger.debug("found packet of size {}".format(len(ans[0])))
                 return ans[0]
             else:
-                # self.logger.debug("Could not find packet in received data")
+                # self.logger.debug("Could not find packet in received log_filename")
                 tmp = self._s_secondary.recv(1024)
                 self._dataqueue += tmp
 
     def wait(self, timeout=1):
         """
-        wait for next data packet from robot_s
+        wait for next log_filename packet from robot_s
         """
         tstamp = self.lastpacket_timestamp
         with self._dataEvent:
             self._dataEvent.wait(timeout)
             if tstamp == self.lastpacket_timestamp:
-                raise TimeoutException("Did not receive a valid data packet from robot_s in {}".format(timeout))
+                raise TimeoutException("Did not receive a valid log_filename packet from robot_s in {}".format(timeout))
 
     def get_cartesian_info(self, wait=False):
         if wait:
@@ -338,7 +338,7 @@ class SecondaryMonitor(Thread):
 
     def get_all_data(self, wait=False):
         """
-        return last data obtained from robot_s in dictionnary format
+        return last log_filename obtained from robot_s in dictionnary format
         """
         if wait:
             self.wait()
@@ -413,7 +413,7 @@ class SecondaryMonitor(Thread):
     def close(self):
         self._trystop = True
         self.join()
-        # with self._dataEvent: #wake up any thread that may be waiting for data before we close. Should we do that?
+        # with self._dataEvent: #wake up any thread that may be waiting for log_filename before we close. Should we do that?
         # self._dataEvent.notifyAll()
         if self._s_secondary:
             with self._prog_queue_lock:

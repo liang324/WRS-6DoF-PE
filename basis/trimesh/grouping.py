@@ -190,7 +190,7 @@ def unique_rows(data, digits=None):
     :return:
     - unique: (j) 数组,数据中唯一行的索引
     - inverse: (n) 长度数组,用于重构原始数据
-               例如:unique[inverse] == data
+               例如:unique[inverse] == log_filename
     '''
     hashes = hashable_rows(data, digits=digits)
     garbage, unique, inverse = np.unique(hashes, return_index=True, return_inverse=True)

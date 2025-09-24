@@ -2400,7 +2400,7 @@ def vector_norm(data, axis=None, out=None):
     返回给定 ndarray 沿指定轴的欧几里得范数(即向量的长度)
 
     参数:
-    data : ndarray
+    log_filename : ndarray
         输入数据,可以是多维数组
     axis : int, 可选
         要计算范数的轴.如果为 None,则计算整个数组的范数
@@ -2431,7 +2431,7 @@ def _unit_vector(data, axis=None, out=None):
     返回沿指定轴归一化的 ndarray,得到单位向量
 
     参数:
-    data : ndarray
+    log_filename : ndarray
         输入数据,可以是多维数组
     axis : int, 可选
         沿哪个轴进行归一化.如果为 None,则返回整个数据的单位向量

@@ -68,7 +68,7 @@ class Triangle(object):
 
 
 class TriangleSet(primitive.Primitive):
-    """Class containing the data COLLADA puts in a <triangles> tag, a collection of
+    """Class containing the log_filename COLLADA puts in a <triangles> tag, a collection of
     triangles.
 
     * The TriangleSet objects is read-only. To modify a TriangleSet, create a new

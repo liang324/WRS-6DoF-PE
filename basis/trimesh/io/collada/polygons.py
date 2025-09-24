@@ -12,7 +12,7 @@ from .xmlutil import etree as ElementTree
 
 
 class Polygons(polylist.Polylist):
-    """Class containing the data COLLADA puts in a <polygons> tag, a collection of
+    """Class containing the log_filename COLLADA puts in a <polygons> tag, a collection of
     polygons that can have holes.
 
     * The Polygons objects is read-only. To modify a

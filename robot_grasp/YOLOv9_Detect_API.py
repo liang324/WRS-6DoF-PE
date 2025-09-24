@@ -1,3 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+"""
+@Project ：WRS-6DoF-PE
+@File    ：YOLOv9_Detect_API.py
+@IDE     ：PyCharm
+@Author  ：Yixuan Su
+@Date    ：2025/07/11 10:07
+Description:
+
+"""
+
+
 import argparse
 import os
 import platform
@@ -8,6 +22,7 @@ from pathlib import Path
 import csv
 import torch
 from torch.backends import cudnn
+from ultralytics.data import annotator
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]
@@ -152,20 +167,27 @@ class DetectAPI:
 
 # 定义一个简单的测试函数,并传入设备参数
 def test_yolo(device='0'):
+    save_dir = r'D:\AI\WRS-6DoF-PE\robot_grasp\data'
+
     detect_api = DetectAPI(
-        weights=r'D:\AI\ABB_wrs_hu_sam\suyixuan_sam\Human_Robot_Collaboration\Tube_Grasping\work3_HRC_Projection_DH76\best_rack510.pt',
+        weights=r'D:\AI\WRS-6DoF-PE\robot_grasp\best.pt',
         imgsz=640, device=device,
         csv_path='detection_results.csv')
     # 使用实际存在的图片路径
-    img_list = [cv2.imread(
-        r'D:\AI\ABB_wrs_hu_sam\suyixuan_sam\Human_Robot_Collaboration\Tube_Grasping\work3_HRC_Projection_DH76\realsense_data_rack510\pcd\color_20250910_174107.png'),
-                # cv2.imread(r'E:\ABB\segment-anything\data\images\00001.jpg')
+    img_list = [cv2.imread(r'D:\AI\WRS-6DoF-PE\robot_grasp\kinect_data_global\color\00000.jpg'),
+                # cv2.imread(r'E:\ABB\segment-anything\log_filename\images\00001.jpg')
                 ]
     # detect_api.detect(img_list)
 
     # 获取每张图片的检测物体数量
     for i, img in enumerate(img_list):
         im0, pred, total_objects = detect_api.detect([img])  # 传递图像进行检测
+
+        # 保存 img_detected
+        img_detected_path = os.path.join(save_dir, 'img_detected.jpg')
+        cv2.imwrite(img_detected_path, im0)
+        print(f"img_detected 已保存: {img_detected_path}")
+
         print(f'Image {i + 1} class counts: {total_objects}')
 
 

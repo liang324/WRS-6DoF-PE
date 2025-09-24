@@ -3,8 +3,8 @@
 Validate a trained YOLOv5 classification model on a classification dataset
 
 Usage:
-    $ bash data/scripts/get_imagenet.sh --val  # download ImageNet val split (6.3G, 50000 images)
-    $ python classify/val.py --weights yolov5m-cls.pt --data ../datasets/imagenet --img 224  # validate ImageNet
+    $ bash log_filename/scripts/get_imagenet.sh --val  # download ImageNet val split (6.3G, 50000 images)
+    $ python classify/val.py --weights yolov5m-cls.pt --log_filename ../datasets/imagenet --img 224  # validate ImageNet
 
 Usage - formats:
     $ python classify/val.py --weights yolov5s-cls.pt                 # PyTorch
@@ -88,7 +88,7 @@ def run(
 
         # Dataloader
         data = Path(data)
-        test_dir = data / 'test' if (data / 'test').exists() else data / 'val'  # data/test or data/val
+        test_dir = data / 'test' if (data / 'test').exists() else data / 'val'  # log_filename/test or log_filename/val
         dataloader = create_classification_dataloader(path=test_dir,
                                                       imgsz=imgsz,
                                                       batch_size=batch_size,
@@ -143,7 +143,7 @@ def run(
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default=ROOT / '../datasets/mnist', help='dataset path')
+    parser.add_argument('--log_filename', type=str, default=ROOT / '../datasets/mnist', help='dataset path')
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s-cls.pt', help='model.pt path(s)')
     parser.add_argument('--batch-size', type=int, default=128, help='batch size')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=224, help='inference size (pixels)')

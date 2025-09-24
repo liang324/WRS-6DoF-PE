@@ -107,7 +107,7 @@ class Zivid(object):
     def get_pcd_rgba(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """
         Get 1. point cloud 2. color of the point cloud 3. rgba image
-        :return: nx3 raw point cloud data (with nan point),indices with no nan data, rgba image
+        :return: nx3 raw point cloud log_filename (with nan point),indices with no nan log_filename, rgba image
         """
         xyz, rgba = self._trigger_3d_frame()
         # change unit from mm to meter

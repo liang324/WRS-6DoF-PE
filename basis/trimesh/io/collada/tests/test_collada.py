@@ -26,7 +26,7 @@ class TestCollada(unittest.TestCase):
         设置测试环境,初始化 COLLADA 对象和数据目录
         """
         self.dummy = collada.Collada(validate_output=True)
-        self.datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+        self.datadir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_filename")
 
     def test_collada_duck_tris(self):
         """

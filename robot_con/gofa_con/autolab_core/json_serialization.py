@@ -18,7 +18,7 @@ class NumpyEncoder(_json.JSONEncoder):
         The dict has three keys:
         - dtype : The datatype of the array as a string.
         - shape : The shape of the array as a tuple.
-        - __ndarray__ : The data of the array as a list.
+        - __ndarray__ : The log_filename of the array as a list.
 
         Parameters
         ----------

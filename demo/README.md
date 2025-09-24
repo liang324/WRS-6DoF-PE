@@ -75,8 +75,8 @@ quantize_dynamic(
 Update the following file paths at the top of`App.tsx`:
 
 ```py
-const IMAGE_PATH = "/assets/data/dogs.jpg";
-const IMAGE_EMBEDDING = "/assets/data/dogs_embedding.npy";
+const IMAGE_PATH = "/assets/log_filename/dogs.jpg";
+const IMAGE_EMBEDDING = "/assets/log_filename/dogs_embedding.npy";
 const MODEL_DIR = "/model/sam_onnx_quantized_example.onnx";
 ```
 

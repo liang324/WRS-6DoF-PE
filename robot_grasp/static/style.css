@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;      /* 页面使用 Arial 字体，如果系统没有则用默认无衬线字体 */
+    background-color: #f6f8fa;           /* 背景颜色为淡灰色，看起来柔和 */
+    text-align: center;                  /* 页面内容居中显示 */
+    padding: 30px;                        /* 页面四周留 30px 间距 */
+}
+
+h2 {
+    color: #333;                          /* 二级标题文字为深灰色 */
+}
+
+button {
+    background-color: #4CAF50;            /* 按钮背景颜色为绿色（代表“执行”、“确认”） */
+    color: white;                         /* 按钮文字为白色，和绿色形成对比 */
+    padding: 12px 24px;                   /* 上下间距 12px，左右间距 24px，让按钮看起来不拥挤 */
+    margin: 5px;                          /* 按钮外间距 5px，按钮之间有空隙 */
+    border: none;                         /* 移除默认边框 */
+    border-radius: 5px;                   /* 按钮圆角 */
+    font-size: 16px;                      /* 字体大小适中 */
+    cursor: pointer;                      /* 鼠标悬停时显示手型图标 */
+}
+
+button:hover {
+    background-color: #45a049;            /* 鼠标悬停时，按钮颜色变成稍微深一点的绿色 */
+}
+
+#status {
+    margin-top: 20px;                     /* 上方留空 20px */
+    padding: 10px;                        /* 内部留白 10px */
+    background: #fff;                     /* 背景为白色，突显和主体的区别 */
+    border-radius: 5px;                   /* 圆角 */
+    display: inline-block;                /* 根据内容宽度显示，同时支持设置宽度 */
+    min-width: 300px;                     /* 最少宽度 300px，避免太窄 */
+    text-align: left;                     /* 文本左对齐，方便阅读消息 */
+    border: 1px solid #ddd;               /* 浅灰边框 */
+    font-family: monospace;               /* 使用等宽字体，适合显示日志或状态信息 */
+}

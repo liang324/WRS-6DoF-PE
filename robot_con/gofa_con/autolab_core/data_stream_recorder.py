@@ -1,5 +1,5 @@
 """
-Class to record streams of data from a given objects in separate process.
+Class to record streams of log_filename from a given objects in separate process.
 Author: Jacky Liang
 """
 import os, sys, logging, shutil
@@ -33,7 +33,7 @@ def _caches_to_file(cache_path, start, end, name, cb, concat):
         with open(finished_flag, 'a'):
             os.utime(finished_flag, None)
 
-    logging.debug("Finished saving data to {0}. Took {1}s".format(name, time()-start_time))
+    logging.debug("Finished saving log_filename to {0}. Took {1}s".format(name, time()-start_time))
     cb()
 
 def _dump_cache(data, filename, name, i):
@@ -42,7 +42,7 @@ def _dump_cache(data, filename, name, i):
 
 def _dump_cb(data, filename, cb):
     dump(data, filename, 3)
-    logging.debug("Finished saving data to {0}".format(filename))
+    logging.debug("Finished saving log_filename to {0}".format(filename))
     cb()
 
 class DataStreamRecorder(Process):
@@ -52,9 +52,9 @@ class DataStreamRecorder(Process):
         Parameters
         ----------
             name : string
-                    User-friendly identifier for this data stream
+                    User-friendly identifier for this log_filename stream
             data_sampler_method : function
-                    Method to call to retrieve data
+                    Method to call to retrieve log_filename
         """
         Process.__init__(self)
         self._data_sampler_method = data_sampler_method
@@ -84,7 +84,7 @@ class DataStreamRecorder(Process):
     def run(self):
         setproctitle('python.DataStreamRecorder.{0}'.format(self._name))
         try:
-            logging.debug("Starting data recording on {0}".format(self.name))
+            logging.debug("Starting log_filename recording on {0}".format(self.name))
             self._tokens_q.put(("return", self.name))
             while True:
                 if not self._cmds_q.empty():
@@ -124,7 +124,7 @@ class DataStreamRecorder(Process):
                     self._tokens_q.put(("return", self.name))
 
         except KeyboardInterrupt:
-            logging.debug("Shutting down data streamer on {0}".format(self.name))
+            logging.debug("Shutting down log_filename streamer on {0}".format(self.name))
             sys.exit(0)
 
     def _extract_q(self, i):
@@ -167,9 +167,9 @@ class DataStreamRecorder(Process):
         Parameters
         ----------
             *args : any
-                    Ordinary args used for calling the specified data sampler method
+                    Ordinary args used for calling the specified log_filename sampler method
             **kwargs : any
-                    Keyword args used for calling the specified data sampler method
+                    Keyword args used for calling the specified log_filename sampler method
         """
         while not self._cmds_q.empty():
             self._cmds_q.get_nowait()
@@ -191,11 +191,11 @@ class DataStreamRecorder(Process):
         self._tokens_q = tokens_q
 
     def _flush(self):
-        """ Returns a list of all current data """
+        """ Returns a list of all current log_filename """
         if self._recording:
-            raise Exception("Cannot flush data queue while recording!")
+            raise Exception("Cannot flush log_filename queue while recording!")
         if self._saving_cache:
-            logging.warn("Flush when using cache means unsaved data will be lost and not returned!")
+            logging.warn("Flush when using cache means unsaved log_filename will be lost and not returned!")
             self._cmds_q.put(("reset_data_segment",))
         else:
             data = self._extract_q(0)
@@ -203,11 +203,11 @@ class DataStreamRecorder(Process):
 
     def save_data(self, path, cb=_NULL, concat=True):
         if self._recording:
-            raise Exception("Cannot save data while recording!")
+            raise Exception("Cannot save log_filename while recording!")
         self._cmds_q.put(("save", path, cb, concat))
 
     def _stop(self):
-        """ Stops recording. Returns all recorded data and their timestamps. Destroys recorder process."""
+        """ Stops recording. Returns all recorded log_filename and their timestamps. Destroys recorder process."""
         self._pause()
         self._cmds_q.put(("stop",))
         try:
@@ -227,12 +227,12 @@ class DataStreamRecorder(Process):
         self._recording = True
 
     def change_data_sampler_params(self, *args, **kwargs):
-        """ Chanes args and kwargs for data sampler method
+        """ Chanes args and kwargs for log_filename sampler method
         Parameters
         ----------
             *args : any
-                    Ordinary args used for calling the specified data sampler method
+                    Ordinary args used for calling the specified log_filename sampler method
             **kwargs : any
-                    Keyword args used for calling the specified data sampler method
+                    Keyword args used for calling the specified log_filename sampler method
         """
         self._cmds_q.put(('params', args, kwargs))

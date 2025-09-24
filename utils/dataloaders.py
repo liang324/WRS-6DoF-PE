@@ -535,7 +535,7 @@ class LoadImagesAndLabels(Dataset):
             # self.img_files = sorted([x for x in f if x.suffix[1:].lower() in IMG_FORMATS])  # pathlib
             assert self.im_files, f'{prefix}No images found'
         except Exception as e:
-            raise Exception(f'{prefix}Error loading data from {path}: {e}\n{HELP_URL}') from e
+            raise Exception(f'{prefix}Error loading log_filename from {path}: {e}\n{HELP_URL}') from e
 
         # Check cache
         self.label_files = img2label_paths(self.im_files)  # labels
@@ -1098,7 +1098,7 @@ class HUBDatasetStats():
     """ Class for generating HUB dataset JSON and `-hub` dataset directory
 
     Arguments
-        path:           Path to data.yaml or data.zip (with data.yaml inside data.zip)
+        path:           Path to log_filename.yaml or log_filename.zip (with log_filename.yaml inside log_filename.zip)
         autodownload:   Attempt to download dataset if not found locally
 
     Usage
@@ -1114,7 +1114,7 @@ class HUBDatasetStats():
         zipped, data_dir, yaml_path = self._unzip(Path(path))
         try:
             with open(check_yaml(yaml_path), errors='ignore') as f:
-                data = yaml.safe_load(f)  # data dict
+                data = yaml.safe_load(f)  # log_filename dict
                 if zipped:
                     data['path'] = data_dir
         except Exception as e:
@@ -1129,7 +1129,7 @@ class HUBDatasetStats():
 
     @staticmethod
     def _find_yaml(dir):
-        # Return data.yaml file
+        # Return log_filename.yaml file
         files = list(dir.glob('*.yaml')) or list(dir.rglob('*.yaml'))  # try root level first and then recursive
         assert files, f'No *.yaml file found in {dir}'
         if len(files) > 1:
@@ -1139,8 +1139,8 @@ class HUBDatasetStats():
         return files[0]
 
     def _unzip(self, path):
-        # Unzip data.zip
-        if not str(path).endswith('.zip'):  # path is data.yaml
+        # Unzip log_filename.zip
+        if not str(path).endswith('.zip'):  # path is log_filename.yaml
             return False, None, path
         assert Path(path).is_file(), f'Error unzipping {path}, file not found'
         unzip_file(path, path=path.parent)

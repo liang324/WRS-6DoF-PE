@@ -27,7 +27,7 @@ class DaeMissingSampler2D(Exception):
 
 
 class CImage(DaeObject):
-    """Class containing data coming from a <image> tag.
+    """Class containing log_filename coming from a <image> tag.
 
     Basically is just the path to the file, but we give an extended
     functionality if PIL is available. You can in that case get the
@@ -46,7 +46,7 @@ class CImage(DaeObject):
         :param collada.Collada collada:
           The collada objects this image belongs to
         :param xmlnode:
-          If loaded from xml, the node this data comes from
+          If loaded from xml, the node this log_filename comes from
 
         """
         self.id = id
@@ -124,8 +124,8 @@ class CImage(DaeObject):
         self._pilimage = None
 
     data = property(getData, setData)
-    """Raw binary image file data if the file is readable. If `aux_file_loader` was passed to
-    :func:`collada.Collada.__init__`, this function will be called to retrieve the data.
+    """Raw binary image file log_filename if the file is readable. If `aux_file_loader` was passed to
+    :func:`collada.Collada.__init__`, this function will be called to retrieve the log_filename.
     Otherwise, if the file came from the local disk, the path will be interpreted from
     the local file system. If the file was a zip archive, the archive will be searched."""
     pilimage = property(getImage)
@@ -133,7 +133,7 @@ class CImage(DaeObject):
     uintarray = property(getUintArray)
     """Numpy array (height, width, nchannels) in integer format."""
     floatarray = property(getFloatArray)
-    """Numpy float array (height, width, nchannels) with the image data normalized to 1.0."""
+    """Numpy float array (height, width, nchannels) with the image log_filename normalized to 1.0."""
 
     @staticmethod
     def load(collada, localspace, node):
@@ -159,7 +159,7 @@ class CImage(DaeObject):
 
 
 class Surface(DaeObject):
-    """Class containing data coming from a <surface> tag.
+    """Class containing log_filename coming from a <surface> tag.
 
     Collada materials use this to access to the <image> tag.
     The only extra information we store right now is the
@@ -221,7 +221,7 @@ class Surface(DaeObject):
         return Surface(id, img, format, xmlnode=node)
 
     def save(self):
-        """Saves the surface data back to :attr:`xmlnode`"""
+        """Saves the surface log_filename back to :attr:`xmlnode`"""
         surfacenode = self.xmlnode.find(tag('surface'))
         initnode = surfacenode.find(tag('init_from'))
         if self.format:
@@ -241,7 +241,7 @@ class Surface(DaeObject):
 
 
 class Sampler2D(DaeObject):
-    """Class containing data coming from <sampler2D> tag in material.
+    """Class containing log_filename coming from <sampler2D> tag in material.
 
     Collada uses the <sampler2D> tag to map to a <surface>. The only
     information we store about the sampler right now is minfilter and
@@ -310,7 +310,7 @@ class Sampler2D(DaeObject):
         return Sampler2D(id, surface, minfilter, magfilter, xmlnode=node)
 
     def save(self):
-        """Saves the sampler data back to :attr:`xmlnode`"""
+        """Saves the sampler log_filename back to :attr:`xmlnode`"""
         samplernode = self.xmlnode.find(tag('sampler2D'))
         sourcenode = samplernode.find(tag('source'))
         if self.minfilter:
@@ -330,7 +330,7 @@ class Sampler2D(DaeObject):
 
 
 class Map(DaeObject):
-    """Class containing data coming from <texture> tag inside material.
+    """Class containing log_filename coming from <texture> tag inside material.
 
     When a material defines its properties like `diffuse`, it can give you
     a color or a texture. In the latter, the texture is mapped with a
@@ -401,7 +401,7 @@ class OPAQUE_MODE:
 
 
 class Effect(DaeObject):
-    """Class containing data coming from an <effect> tag.
+    """Class containing log_filename coming from an <effect> tag.
     """
     supported = ['emission', 'ambient', 'diffuse', 'specular',
                  'shininess', 'reflective', 'reflectivity',
@@ -818,7 +818,7 @@ class Effect(DaeObject):
 
 
 class Material(DaeObject):
-    """Class containing data coming from a <material> tag.
+    """Class containing log_filename coming from a <material> tag.
 
     Right now, this just stores a reference to the effect
     which is instantiated in the material. The effect instance
@@ -875,7 +875,7 @@ class Material(DaeObject):
         return Material(matid, matname, effect, xmlnode=node)
 
     def save(self):
-        """Saves the material data back to :attr:`xmlnode`"""
+        """Saves the material log_filename back to :attr:`xmlnode`"""
         self.xmlnode.set('id', str(self.id))
         self.xmlnode.set('name', str(self.name))
         effnode = self.xmlnode.find(tag('instance_effect'))

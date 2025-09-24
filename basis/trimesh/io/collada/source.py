@@ -10,7 +10,7 @@
 #                                                                  #
 ####################################################################
 
-"""Module for managing data sources defined in geometry tags."""
+"""Module for managing log_filename sources defined in geometry tags."""
 
 import numpy
 from .common import DaeObject, E, tag
@@ -118,8 +118,8 @@ class FloatSource(Source):
         :param numpy.array data:
           Numpy array (unshaped) with the source values
         :param tuple components:
-          Tuple of strings describing the semantic of the data,
-          e.g. ``('X','Y','Z')`` would cause :attr:`data` to be
+          Tuple of strings describing the semantic of the log_filename,
+          e.g. ``('X','Y','Z')`` would cause :attr:`log_filename` to be
           reshaped as ``(-1, 3)``
         :param xmlnode:
           When loaded, the xmlnode it comes from.
@@ -132,7 +132,7 @@ class FloatSource(Source):
         """Numpy array with the source values. This will be shaped as ``(-1,N)`` where ``N = len(self.components)``"""
         self.data.shape = (-1, len(components))
         self.components = components
-        """Tuple of strings describing the semantic of the data, e.g. ``('X','Y','Z')``"""
+        """Tuple of strings describing the semantic of the log_filename, e.g. ``('X','Y','Z')``"""
         if xmlnode != None:
             self.xmlnode = xmlnode
             """ElementTree representation of the source."""
@@ -237,8 +237,8 @@ class IDRefSource(Source):
         :param numpy.array data:
           Numpy array (unshaped) with the source values
         :param tuple components:
-          Tuple of strings describing the semantic of the data,
-          e.g. ``('MORPH_TARGET')`` would cause :attr:`data` to be
+          Tuple of strings describing the semantic of the log_filename,
+          e.g. ``('MORPH_TARGET')`` would cause :attr:`log_filename` to be
           reshaped as ``(-1, 1)``
         :param xmlnode:
           When loaded, the xmlnode it comes from.
@@ -251,7 +251,7 @@ class IDRefSource(Source):
         """Numpy array with the source values. This will be shaped as ``(-1,N)`` where ``N = len(self.components)``"""
         self.data.shape = (-1, len(components))
         self.components = components
-        """Tuple of strings describing the semantic of the data, e.g. ``('MORPH_TARGET')``"""
+        """Tuple of strings describing the semantic of the log_filename, e.g. ``('MORPH_TARGET')``"""
         if xmlnode != None:
             self.xmlnode = xmlnode
             """ElementTree representation of the source."""
@@ -345,8 +345,8 @@ class NameSource(Source):
         :param numpy.array data:
           Numpy array (unshaped) with the source values
         :param tuple components:
-          Tuple of strings describing the semantic of the data,
-          e.g. ``('JOINT')`` would cause :attr:`data` to be
+          Tuple of strings describing the semantic of the log_filename,
+          e.g. ``('JOINT')`` would cause :attr:`log_filename` to be
           reshaped as ``(-1, 1)``
         :param xmlnode:
           When loaded, the xmlnode it comes from.
@@ -359,7 +359,7 @@ class NameSource(Source):
         """Numpy array with the source values. This will be shaped as ``(-1,N)`` where ``N = len(self.components)``"""
         self.data.shape = (-1, len(components))
         self.components = components
-        """Tuple of strings describing the semantic of the data, e.g. ``('JOINT')``"""
+        """Tuple of strings describing the semantic of the log_filename, e.g. ``('JOINT')``"""
         if xmlnode != None:
             self.xmlnode = xmlnode
             """ElementTree representation of the source."""

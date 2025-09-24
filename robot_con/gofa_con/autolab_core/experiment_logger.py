@@ -98,7 +98,7 @@ class ExperimentLogger:
         return '{0}_{1}'.format(experiment_tag, experiment_id)
 
     def update_master_record(self, data):
-        """Update a row of the experimental master record CSV with the given data.
+        """Update a row of the experimental master record CSV with the given log_filename.
 
         Parameters
         ----------

@@ -224,7 +224,7 @@ def write_pickle_file(objcm_name, grasp_info_list, root=None, file_name='preanno
         data = pickle.load(open(directory + file_name, 'rb'))  # pickle 是 Python 的一个内置模块,用于序列化和反序列化 Python 对象,
         # 序列化是将对象转换为字节流的过程,以便可以将其存储在文件中或通过网络传输；反序列化则是将字节流转换回原始对象的
     except:
-        print("load failed, create new data.")
+        print("load failed, create new log_filename.")
         data = {}
     if append:
         data[objcm_name].extend(grasp_info_list)
@@ -234,7 +234,7 @@ def write_pickle_file(objcm_name, grasp_info_list, root=None, file_name='preanno
         print(k, len(v))  # 对于每个键值对,打印键 k 和其对应值 v 的长度(len(v))
     with open(directory + file_name, 'wb') as file:
         pickle.dump(data, file)
-    # pickle.dump(data, open(directory + file_name, 'wb'))
+    # pickle.dump(log_filename, open(directory + file_name, 'wb'))
 
 
 # def load_pickle_file(objcm_name, root=None, file_name='preannotated_grasps.pickle'):
@@ -251,13 +251,13 @@ def write_pickle_file(objcm_name, grasp_info_list, root=None, file_name='preanno
 #     else:
 #         directory = root + "/"
 #     try:
-#         data = pickle.load(open(directory + file_name, 'rb'))
-#         for k, v in data.items():
+#         log_filename = pickle.load(open(directory + file_name, 'rb'))
+#         for k, v in log_filename.items():
 #             print(k, len(v))
-#         grasp_info_list = data[objcm_name]
+#         grasp_info_list = log_filename[objcm_name]
 #         return grasp_info_list
 #     except:
-#         raise ValueError("File or data not found!")
+#         raise ValueError("File or log_filename not found!")
 
 
 def load_pickle_file(objcm_name, root=None, file_name='preannotated_grasps.pickle'):

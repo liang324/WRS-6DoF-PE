@@ -154,7 +154,7 @@ class KinectBodyTracker:
 		Parameters:h
 		k4a_capture_t sensor_capture_handle: Handle to a sensor capture returned by k4a_device_get_capture() from k4a SDK.
 		timeout_in_ms (int):Specifies the time in milliseconds the function should block waiting for the capture. If set to 0, the function will
-							return without blocking. Passing a value of #K4A_WAIT_INFINITE will block indefinitely until data is available, the
+							return without blocking. Passing a value of #K4A_WAIT_INFINITE will block indefinitely until log_filename is available, the
 							device is disconnected, or another error occurs.
 
 		Returns:
@@ -165,7 +165,7 @@ class KinectBodyTracker:
 		result. The processed results will be added to an output queue maintained by k4abt_tracker_t instance. Call
 		k4abt_tracker_pop_result to get the result and pop it from the output queue.
 		If the input queue or output queue is full, this function will block up until the timeout is reached.
-		Once body_frame data is read, the user must call k4abt_frame_release() to return the allocated memory to the SDK
+		Once body_frame log_filename is read, the user must call k4abt_frame_release() to return the allocated memory to the SDK
 
 		Upon successfully insert a sensor capture to the input queue this function will return success.
 		"""
@@ -177,7 +177,7 @@ class KinectBodyTracker:
 		Parameters:
 		k4abt_frame_t* body_frame_handle: If successful this contains a handle to a body frame objects.
 		timeout_in_ms (int):Specifies the time in milliseconds the function should block waiting for the capture. If set to 0, the function will
-							return without blocking. Passing a value of #K4A_WAIT_INFINITE will block indefinitely until data is available, the
+							return without blocking. Passing a value of #K4A_WAIT_INFINITE will block indefinitely until log_filename is available, the
 							device is disconnected, or another error occurs.
 
 		Returns:
@@ -186,8 +186,8 @@ class KinectBodyTracker:
 		Remarks:
 		Retrieves the next available body frame result and pop it from the output queue in the k4abt_tracker_t. If a new body
 		frame is not currently available, this function will block up until the timeout is reached. The SDK will buffer at
-		least three body frames worth of data before stopping new capture being queued by k4abt_tracker_enqueue_capture.
-		Once body_frame data is read, the user must call k4abt_frame_release() to return the allocated memory to the SDK.
+		least three body frames worth of log_filename before stopping new capture being queued by k4abt_tracker_enqueue_capture.
+		Once body_frame log_filename is read, the user must call k4abt_frame_release() to return the allocated memory to the SDK.
 
 		Upon successfully reads a body frame this function will return success.
 		"""
@@ -233,7 +233,7 @@ class KinectBodyTracker:
 		uint32_t number_of_bodies: Returns the number of detected bodies. 0 if the function fails.
 
 		Remarks:
-		Called when the user has received a body frame handle and wants to access the data contained in it.
+		Called when the user has received a body frame handle and wants to access the log_filename contained in it.
 		"""
 		return self.k4abt.k4abt_frame_get_num_bodies(self.body_frame_handle)
 
@@ -248,7 +248,7 @@ class KinectBodyTracker:
 		k4abt_skeleton_t* skeleton: If successful this contains the body skeleton information.
 
 		Remarks:
-		Called when the user has received a body frame handle and wants to access the data contained in it.
+		Called when the user has received a body frame handle and wants to access the log_filename contained in it.
 		"""
 		skeleton = _k4abt.k4abt_skeleton_t()
 
@@ -282,7 +282,7 @@ class KinectBodyTracker:
 		uint64_t timestamp: Returns the timestamp of the body frame. If the body_frame_handle is invalid this function will return 0.
 
 		Remarks:
-		Called when the user has received a body frame handle and wants to access the data contained in it.
+		Called when the user has received a body frame handle and wants to access the log_filename contained in it.
 		"""
 		return self.k4abt.k4abt_frame_get_device_timestamp_usec(self.body_frame_handle)
 
@@ -312,6 +312,6 @@ class KinectBodyTracker:
 		k4a_capture_t capture_handle: Call this function to access the original k4a_capture_t
 
 		Remarks:
-		Called when the user has received a body frame handle and wants to access the data contained in it.
+		Called when the user has received a body frame handle and wants to access the log_filename contained in it.
 		"""
 		self.capture_handle = self.k4abt.k4abt_frame_get_capture(self.body_frame_handle)

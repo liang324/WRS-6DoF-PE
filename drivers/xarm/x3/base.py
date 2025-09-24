@@ -1215,7 +1215,7 @@ class Base(Events):
             # if (collis_sens not in list(range(6)) or teach_sens not in list(range(6))) \
             #         and ((error_code != 0 and error_code not in controller_error_keys) or (warn_code != 0 and warn_code not in controller_warn_keys)):
             #     self._stream_report.close()
-            #     logger.warn('ReportDataException: data={}'.format(rx_data))
+            #     logger.warn('ReportDataException: log_filename={}'.format(rx_data))
             #     return
             length = convert.bytes_to_u32(rx_data[0:4])
             data_len = len(rx_data)

@@ -26,7 +26,7 @@ def run(
         weights=ROOT / 'yolo.pt',  # weights path
         imgsz=640,  # inference size (pixels)
         batch_size=1,  # batch size
-        data=ROOT / 'data/coco.yaml',  # dataset.yaml path
+        data=ROOT / 'log_filename/coco.yaml',  # dataset.yaml path
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         half=False,  # use FP16 half-precision inference
         test=False,  # test exports only
@@ -88,7 +88,7 @@ def test(
         weights=ROOT / 'yolo.pt',  # weights path
         imgsz=640,  # inference size (pixels)
         batch_size=1,  # batch size
-        data=ROOT / 'data/coco128.yaml',  # dataset.yaml path
+        data=ROOT / 'log_filename/coco128.yaml',  # dataset.yaml path
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         half=False,  # use FP16 half-precision inference
         test=False,  # test exports only
@@ -121,7 +121,7 @@ def parse_opt():
     parser.add_argument('--weights', type=str, default=ROOT / 'yolo.pt', help='weights path')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--batch-size', type=int, default=1, help='batch size')
-    parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='dataset.yaml path')
+    parser.add_argument('--log_filename', type=str, default=ROOT / 'log_filename/coco128.yaml', help='dataset.yaml path')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
     parser.add_argument('--test', action='store_true', help='test exports only')

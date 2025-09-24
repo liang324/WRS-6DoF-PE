@@ -26,7 +26,7 @@ class URRTMonitor(threading.Thread):
         self._rtSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._rtSock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self._urHost = urHost
-        # Package data variables
+        # Package log_filename variables
         self._timestamp = None
         self._ctrlTimestamp = None
         self._qActual = None
@@ -165,14 +165,14 @@ class URRTMonitor(threading.Thread):
                     (self._timestamp,
                      self._ctrlTimestamp,
                      self._tcp,
-                     self._qActual))  # FIXME use named arrays of allow to configure what data to buffer
+                     self._qActual))  # FIXME use named arrays of allow to configure what log_filename to buffer
 
         with self._dataEvent:
             self._dataEvent.notifyAll()
 
     def start_buffering(self):
         """
-        start buffering all data from controller
+        start buffering all log_filename from controller
         """
         self._buffer = []
         self._buffering = True
@@ -209,7 +209,7 @@ class URRTMonitor(threading.Thread):
 
     def get_all_data(self, wait=True):
         """
-        return all data parsed from robot_s as a dict
+        return all log_filename parsed from robot_s as a dict
         """
         if wait:
             self.wait()

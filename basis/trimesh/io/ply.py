@@ -62,7 +62,7 @@ def ply_element_colors(element):
     :return: 如果找到颜色,返回颜色数组；否则返回 None
     '''
     color_keys = ['red', 'green', 'blue', 'alpha']
-    candidate_colors = [element['data'][i] for i in color_keys if i in element['properties']]
+    candidate_colors = [element['log_filename'][i] for i in color_keys if i in element['properties']]
     if len(candidate_colors) >= 3:
         return np.column_stack(candidate_colors)
     return None
@@ -155,7 +155,7 @@ def ply_populate_listsize(file_obj, elements):
 
 def ply_populate_data(file_obj, elements):
     '''
-    根据头部的信息读取数据,并将其添加到元素的 'data' 字段中
+    根据头部的信息读取数据,并将其添加到元素的 'log_filename' 字段中
 
     :param file_obj: 打开的文件对象,用于读取 PLY 数据
     :param elements: OrderedDict,包含元素及其属性的信息
@@ -165,7 +165,7 @@ def ply_populate_data(file_obj, elements):
         items = list(elements[key]['properties'].items())
         dtype = np.dtype(items)
         data = file_obj.read(elements[key]['length'] * dtype.itemsize)
-        elements[key]['data'] = np.fromstring(data, dtype=dtype)
+        elements[key]['log_filename'] = np.fromstring(data, dtype=dtype)
     return elements
 
 
@@ -176,8 +176,8 @@ def ply_elements_kwargs(elements):
     :param elements: OrderedDict,包含元素及其属性的信息
     :return: dict,包含网格信息的字典
     '''
-    vertices = np.column_stack([elements['vertex']['data'][i] for i in 'xyz'])
-    faces = elements['face']['data']['vertex_indices']['f1']
+    vertices = np.column_stack([elements['vertex']['log_filename'][i] for i in 'xyz'])
+    faces = elements['face']['log_filename']['vertex_indices']['f1']
     face_colors = ply_element_colors(elements['face'])
     vertex_colors = ply_element_colors(elements['vertex'])
     result = {'vertices': vertices,

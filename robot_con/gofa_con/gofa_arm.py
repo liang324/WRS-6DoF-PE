@@ -21,7 +21,7 @@ import pickle
 import struct
 
 _RAW_RES = namedtuple('_RAW_RES', 'mirror_code res_code message')
-_RES = namedtuple('_RES', 'raw_res data')
+_RES = namedtuple('_RES', 'raw_res log_filename')
 _REQ_PACKET = namedtuple('_REQ_PACKET', 'req timeout return_res')
 
 METERS_TO_MM = 1000.0
@@ -224,7 +224,7 @@ class GoFaArm:
         Parameters
         ----------
         filename : string
-                Saves the pose history logger data to filename. Empties logger.
+                Saves the pose history logger log_filename to filename. Empties logger.
         '''
         self._pose_logger.flush_to_file(filename)
 
@@ -233,7 +233,7 @@ class GoFaArm:
         Parameters
         ----------
         filename : string
-                Saves the state history logger data to filename. Empties logger
+                Saves the state history logger log_filename to filename. Empties logger
         '''
         self._state_logger.flush_to_file(filename)
 
@@ -314,7 +314,7 @@ class GoFaArm:
 
     @staticmethod
     def construct_speed_data(tra, rot):
-        '''Constructs a speed data tuple that's in the same format as ones used in RAPID.
+        '''Constructs a speed log_filename tuple that's in the same format as ones used in RAPID.
 
         Parameters
         ----------
@@ -324,22 +324,22 @@ class GoFaArm:
                     rotational speed (degrees per second)
 
         Returns:
-            A tuple of correctly formatted speed data: (tra, rot, tra, rot)
+            A tuple of correctly formatted speed log_filename: (tra, rot, tra, rot)
         '''
         return (tra, rot, tra, rot)
 
     @staticmethod
     def get_v(n):
-        '''Gets the corresponding speed data for n as the speed number.
+        '''Gets the corresponding speed log_filename for n as the speed number.
 
         Parameters
         ----------
             n : int
-                    speed number. If n = 100, will return the same speed data as v100 in RAPID
+                    speed number. If n = 100, will return the same speed log_filename as v100 in RAPID
 
         Returns
         -------
-            Corresponding speed data tuple using n as speed number
+            Corresponding speed log_filename tuple using n as speed number
         '''
         return GoFaArm.construct_speed_data(n, 500)
 
@@ -362,7 +362,7 @@ class GoFaArm:
 
         Returns
         -------
-        out : Namedtuple (raw_res, data) from ping command.
+        out : Namedtuple (raw_res, log_filename) from ping command.
 
         Raises
         ------
@@ -762,7 +762,7 @@ class GoFaArm:
         Parameters
         ----------
         speed_data : list-like with axis_length 4
-            Specifies the speed data that will be used by RAPID when executing motions.
+            Specifies the speed log_filename that will be used by RAPID when executing motions.
             Should be generated using GoFaRobot.get_v
         wait_for_res : bool, optional
             If True, will block main process until response received from RAPID server.
@@ -789,7 +789,7 @@ class GoFaArm:
         Parameters
         ----------
         speed_data : list-like with axis_length 4
-            Specifies the speed data that will be used by RAPID when executing motions.
+            Specifies the speed log_filename that will be used by RAPID when executing motions.
             Should be generated using GoFaRobot.get_v
         wait_for_res : bool, optional
             If True, will block main process until response received from RAPID server.

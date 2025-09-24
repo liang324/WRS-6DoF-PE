@@ -14,7 +14,7 @@ from .xmlutil import etree as ElementTree
 
 
 class Geometry(DaeObject):
-    """A class containing the data coming from a COLLADA <geometry> tag"""
+    """A class containing the log_filename coming from a COLLADA <geometry> tag"""
 
     def __init__(self, collada, id, name, sourcebyid, primitives=None,
                  xmlnode=None, double_sided=False):

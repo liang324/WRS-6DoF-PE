@@ -308,7 +308,7 @@ if __name__ == "__main__":
 
     base = wd.World(cam_pos=[2, 0, 1.5], lookat_pos=[0, 0, 0])
     rs_pipe = RealSenseD405()
-    # the first frame contains no data information
+    # the first frame contains no log_filename information
     rs_pipe.get_pcd_texture_depth()
     rs_pipe.get_pcd_texture_depth()
     rbtx = XArmLite6X(ip='192.168.1.190', has_gripper=False)

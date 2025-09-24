@@ -41,7 +41,7 @@ class Line(object):
 
 
 class LineSet(primitive.Primitive):
-    """Class containing the data COLLADA puts in a <lines> tag, a collection of
+    """Class containing the log_filename COLLADA puts in a <lines> tag, a collection of
     lines. The LineSet objects is read-only. To modify a LineSet, create a new
     instance using :meth:`collada.geometry.Geometry.createLineSet`.
 

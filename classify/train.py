@@ -3,12 +3,12 @@
 Train a YOLOv5 classifier model on a classification dataset
 
 Usage - Single-GPU training:
-    $ python classify/train.py --model yolov5s-cls.pt --data imagenette160 --epochs 5 --img 224
+    $ python classify/train.py --model yolov5s-cls.pt --log_filename imagenette160 --epochs 5 --img 224
 
 Usage - Multi-GPU DDP training:
-    $ python -m torch.distributed.run --nproc_per_node 4 --master_port 1 classify/train.py --model yolov5s-cls.pt --data imagenet --epochs 5 --img 224 --device 0,1,2,3
+    $ python -m torch.distributed.run --nproc_per_node 4 --master_port 1 classify/train.py --model yolov5s-cls.pt --log_filename imagenet --epochs 5 --img 224 --device 0,1,2,3
 
-Datasets:           --data mnist, fashion-mnist, cifar10, cifar100, imagenette, imagewoof, imagenet, or 'path/to/data'
+Datasets:           --log_filename mnist, fashion-mnist, cifar10, cifar100, imagenette, imagewoof, imagenet, or 'path/to/log_filename'
 YOLOv5-cls models:  --model yolov5n-cls.pt, yolov5s-cls.pt, yolov5m-cls.pt, yolov5l-cls.pt, yolov5x-cls.pt
 Torchvision models: --model resnet50, efficientnet_b0, etc. See https://pytorch.org/vision/stable/models.html
 """
@@ -78,7 +78,7 @@ def train(opt, device):
             LOGGER.info(f'\nDataset not found ⚠️, missing path {data_dir}, attempting download...')
             t = time.time()
             if str(data) == 'imagenet':
-                subprocess.run(f"bash {ROOT / 'data/scripts/get_imagenet.sh'}", shell=True, check=True)
+                subprocess.run(f"bash {ROOT / 'log_filename/scripts/get_imagenet.sh'}", shell=True, check=True)
             else:
                 url = f'https://github.com/ultralytics/yolov5/releases/download/v1.0/{data}.zip'
                 download(url, dir=data_dir.parent)
@@ -95,7 +95,7 @@ def train(opt, device):
                                                    rank=LOCAL_RANK,
                                                    workers=nw)
 
-    test_dir = data_dir / 'test' if (data_dir / 'test').exists() else data_dir / 'val'  # data/test or data/val
+    test_dir = data_dir / 'test' if (data_dir / 'test').exists() else data_dir / 'val'  # log_filename/test or log_filename/val
     if RANK in {-1, 0}:
         testloader = create_classification_dataloader(path=test_dir,
                                                       imgsz=imgsz,
@@ -252,7 +252,7 @@ def train(opt, device):
         LOGGER.info(f'\nTraining complete ({(time.time() - t0) / 3600:.3f} hours)'
                     f"\nResults saved to {colorstr('bold', save_dir)}"
                     f"\nPredict:         python classify/predict.py --weights {best} --source im.jpg"
-                    f"\nValidate:        python classify/val.py --weights {best} --data {data_dir}"
+                    f"\nValidate:        python classify/val.py --weights {best} --log_filename {data_dir}"
                     f"\nExport:          python export.py --weights {best} --include onnx"
                     f"\nPyTorch Hub:     model = torch.hub.load('ultralytics/yolov5', 'custom', '{best}')"
                     f"\nVisualize:       https://netron.app\n")
@@ -271,7 +271,7 @@ def train(opt, device):
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='yolov5s-cls.pt', help='initial weights path')
-    parser.add_argument('--data', type=str, default='imagenette160', help='cifar10, cifar100, mnist, imagenet, ...')
+    parser.add_argument('--log_filename', type=str, default='imagenette160', help='cifar10, cifar100, mnist, imagenet, ...')
     parser.add_argument('--epochs', type=int, default=10, help='total training epochs')
     parser.add_argument('--batch-size', type=int, default=64, help='total batch size for all GPUs')
     parser.add_argument('--imgsz', '--img', '--img-size', type=int, default=224, help='train, val image size (pixels)')
@@ -320,7 +320,7 @@ def main(opt):
 
 
 def run(**kwargs):
-    # Usage: from yolov5 import classify; classify.train.run(data=mnist, imgsz=320, model='yolov5m')
+    # Usage: from yolov5 import classify; classify.train.run(log_filename=mnist, imgsz=320, model='yolov5m')
     opt = parse_opt(True)
     for k, v in kwargs.items():
         setattr(opt, k, v)

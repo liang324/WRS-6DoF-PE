@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"> <!-- 设置网页编码为 UTF-8，兼容中文 -->
+    <title>机械臂控制面板</title> <!-- 浏览器标签页标题 -->
+    <!-- 引入外部 CSS 样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='control.js') }}"></script>
+</head>
+
+<body>
+<h2>机械臂控制</h2>
+
+    <div class="control-buttons">
+        <button onclick="sendInit()">初始化机械臂</button>
+        <button onclick="sendCmd('00')">执行指令 00</button>
+        <button onclick="sendCmd('11')">执行指令 11</button>
+        <button onclick="sendCmd('22')">拍摄</button>
+
+        <button onclick="sendCmd('q')">退出控制</button>
+    </div>
+
+    <h3>状态输出</h3>
+    <pre id="status">等待操作...</pre> <!-- 用于输出后端返回的状态 -->
+
+    <!-- 引入外部 JS 文件 -->
+    <script src="{{ url_for('static', filename='control.js') }}"></script>
+
+</body>
+
+</html>

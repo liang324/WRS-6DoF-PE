@@ -301,7 +301,7 @@ class ViscaUnexpectedResponseError(ViscaResponseError):
 
 class Packet(bytes):
     """
-    This class models a packet of data, as specified by the Visca protocol.
+    This class models a packet of log_filename, as specified by the Visca protocol.
     It implements some safety checks, and includes also some static utility functions.
     """
 

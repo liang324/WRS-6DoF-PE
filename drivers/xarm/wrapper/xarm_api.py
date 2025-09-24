@@ -1938,7 +1938,7 @@ class XArmAPI(object):
         Register the report callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 'cartesian': [], # if report_cartesian is True
                 'joints': [], # if report_joints is True
@@ -1974,7 +1974,7 @@ class XArmAPI(object):
         Register the report location callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "cartesian": [x, y, z, roll, pitch, yaw], ## if report_cartesian is True
                 "joints": [angle-1, angle-2, angle-3, angle-4, angle-5, angle-6, angle-7], ## if report_joints is True
@@ -1992,7 +1992,7 @@ class XArmAPI(object):
         Register the connect status changed callback
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "connected": connected,
                 "reported": reported,
@@ -2006,7 +2006,7 @@ class XArmAPI(object):
         Register the state status changed callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "state": state,
             }
@@ -2019,7 +2019,7 @@ class XArmAPI(object):
         Register the mode changed callback, only available if enable_report is True and the connect way is socket
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "mode": mode,
             }
@@ -2032,7 +2032,7 @@ class XArmAPI(object):
         Register the motor enable states or motor brake states changed callback, only available if enable_report is True and the connect way is socket
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "mtable": [motor-1-motion-enable, motor-2-motion-enable, ...],
                 "mtbrake": [motor-1-brake-enable, motor-1-brake-enable,...],
@@ -2046,7 +2046,7 @@ class XArmAPI(object):
         Register the error code or warn code changed callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "error_code": error_code,
                 "warn_code": warn_code,
@@ -2060,7 +2060,7 @@ class XArmAPI(object):
         Register the cmdnum changed callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "cmdnum": cmdnum
             }
@@ -2073,7 +2073,7 @@ class XArmAPI(object):
         Register the temperature changed callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "temperatures": [servo-1-temperature, ...., servo-7-temperature]
             }
@@ -2086,7 +2086,7 @@ class XArmAPI(object):
         Register the counter value changed callback, only available if enable_report is True
 
         :param callback:
-            callback data:
+            callback log_filename:
             {
                 "count": counter value
             }
@@ -2681,14 +2681,14 @@ class XArmAPI(object):
 
     def getset_tgpio_modbus_data(self, datas, min_res_len=0):
         """
-        Send the modbus data to the tool gpio
+        Send the modbus log_filename to the tool gpio
         
         :param datas: data_list
-        :param min_res_len: the minimum length of modbus response data. Used to check the data length, if not specified, no check
+        :param min_res_len: the minimum length of modbus response log_filename. Used to check the log_filename length, if not specified, no check
         
         :return: tuple((code, modbus_response))
             code: See the API code documentation for details.
-            modbus_response: modbus response data
+            modbus_response: modbus response log_filename
         """
         return self._arm.getset_tgpio_modbus_data(datas, min_res_len=min_res_len)
 
@@ -2974,7 +2974,7 @@ class XArmAPI(object):
         Note:
             1. only available if firmware_version >= 1.7.0
 
-        :param on_off: enable or disable F/T data sampling.
+        :param on_off: enable or disable F/T log_filename sampling.
         :return: code
             code: See the API code documentation for details.
         """

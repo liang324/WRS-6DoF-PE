@@ -1,12 +1,14 @@
 # -*- coding:utf-8 -*-
 
 """
+Project ：WRS-6DoF-PE
 Author: Yixuan Su
 Date: 2025/07/15
 File: planar_registration.py
 Description: 平面点云配准方案
 
 """
+
 import pyransac3d as pyrsc
 import os
 import open3d as o3d

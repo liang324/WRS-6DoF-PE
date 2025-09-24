@@ -80,7 +80,7 @@ class PerspectiveCamera(Camera):
 
         if xmlnode is not None:
             self.xmlnode = xmlnode
-            """ElementTree representation of the data."""
+            """ElementTree representation of the log_filename."""
         else:
             self._recreateXmlNode()
 
@@ -223,7 +223,7 @@ class OrthographicCamera(Camera):
 
         if xmlnode is not None:
             self.xmlnode = xmlnode
-            """ElementTree representation of the data."""
+            """ElementTree representation of the log_filename."""
         else:
             self._recreateXmlNode()
 

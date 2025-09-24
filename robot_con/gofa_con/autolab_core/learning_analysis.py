@@ -235,7 +235,7 @@ class ClassificationResult(object):
     @staticmethod
     def make_summary_table(train_result, val_result, plot=True, save_dir=None, prepend="", save=False):
         """
-        Makes a matplotlib table objects with relevant data.
+        Makes a matplotlib table objects with relevant log_filename.
         Thanks to Lucas Manuelli for the contribution.
 
         Parameters
@@ -306,7 +306,7 @@ class ClassificationResult(object):
 class RegressionResult(object):
     def __init__(self, predictions, labels):
         """ Creates a classification result.
-        NOTE: Does not yet work with multidimensional data.
+        NOTE: Does not yet work with multidimensional log_filename.
 
         Parameters
         ----------
@@ -473,12 +473,12 @@ class BinaryClassificationResult(ClassificationResult):
         app = 0
         total = 0
         for k in range(len(precisions)-1):
-            # read cur data
+            # read cur log_filename
             cur_prec = precisions[k]
             cur_pp = pct_pred_pos[k]
             cur_tau = taus[k]
 
-            # read next data
+            # read next log_filename
             next_prec = precisions[k+1]
             next_pp = pct_pred_pos[k+1]
             next_tau = taus[k+1]

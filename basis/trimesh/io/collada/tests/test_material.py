@@ -132,9 +132,9 @@ class TestMaterial(unittest.TestCase):
         - 加载图像数据并验证其大小
         - 验证图像数据的格式和尺寸
         """
-        data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+        data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log_filename")
         texture_file_path = os.path.join(data_dir, "duckCM.tga")
-        self.assertTrue(os.path.isfile(texture_file_path), "Could not find data/duckCM.tga file for testing")
+        self.assertTrue(os.path.isfile(texture_file_path), "Could not find log_filename/duckCM.tga file for testing")
 
         texdata = open(texture_file_path, 'rb').read()
         self.assertEqual(len(texdata), 786476)

@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-@Project ：ABB_wrs_hu_sam
+@Project ：WRS-6DoF-PE
 @File    ：local_detection_utils.py
 @IDE     ：PyCharm
 @Author  ：Yixuan Su
@@ -161,7 +161,7 @@ class RobotController:
                 "oce": 0.15,  # centrifuge_machine
                 "cce": 0.15,  # centrifuge_machine
                 "locker": 0.30,  # locker
-                "rack510": 0.12,  # rack510
+                "rack510": 0.20,  # rack510
                 "rack34": 0.05,  # rack34
                 "unknown": 0.1  # 默认
             }
@@ -489,7 +489,12 @@ class RobotController:
                                 obj_dirs["pcd"])
 
                             # rack510 特定处理（含试管架 + 试管处理）
-                            pipeline = Rack510Pipeline(weights_path="best_rack510.pt", rack_shape=(5, 10))
+                            pipeline = Rack510Pipeline(weights_path="best_rack510.pt",
+                                                       rack_shape=(5, 10),
+                                                       center_holes=[(2, 4), (2, 5)],
+                                                       tube_spacing=0.025,
+                                                       tube_diameter=0.021
+                                                       )
                             rack_and_tubes_data = pipeline.run(
                                 color_image=color_image,
                                 depth_image=depth_image,
@@ -518,41 +523,46 @@ class RobotController:
                                 break
 
                     elif obj_class == "rack34":
-                        # while True:
-                        #     color_image, save_colorpath, depth_image, save_depthpath, original_point_cloud, save_pcdpath = capture_point_cloud(
-                        #         obj_dirs["pcd"])
-                        #
-                        #     # rack510 特定处理（含试管架 + 试管处理）
-                        #     pipeline = Rack510Pipeline(weights_path="best_rack510.pt", rack_shape=(5, 10))
-                        #     rack_and_tubes_data = pipeline.run(
-                        #         color_image=color_image,
-                        #         depth_image=depth_image,
-                        #         T_tcp_in_robot=T_tcp_in_robot,
-                        #         save_dirs={"masks": obj_dirs["masks"],
-                        #                    "point_clouds": obj_dirs["point_clouds"],
-                        #                    "planes": obj_dirs["planes"],
-                        #                    "remaining": obj_dirs["remaining"],
-                        #                    "pcd": obj_dirs["pcd"]}
-                        #     )
-                        #
-                        #     if rack_and_tubes_data is None:
-                        #         print(f"[WARN] {obj_class} 检测失败！")
-                        #         retry = input("是否重新拍摄并检测？(y/n): ").strip().lower()
-                        #         if retry == "y":
-                        #             print("[INFO] 重新拍摄并检测中...")
-                        #             continue  # 重新回到 while True 顶部,重新执行拍摄与检测
-                        #         else:
-                        #             print(f"[INFO] 用户选择跳过 {obj_class}")
-                        #             break  # 跳出 while True,去处理下一个物体
-                        #     else:
-                        #         rack_matrix = rack_and_tubes_data["rack_info"]["rack_matrix"]
-                        #         print("Rack matrix:", rack_matrix)
-                        #         for tube in rack_and_tubes_data["tubes_info"]:
-                        #             print(f"Tube {tube['label']} pose in robot:\n", tube["Tube_center_pose_in_robot"])
-                        #         break
-                        pass
+                        while True:
+                            color_image, save_colorpath, depth_image, save_depthpath, original_point_cloud, save_pcdpath = capture_point_cloud(
+                                obj_dirs["pcd"])
+
+                            # rack510 特定处理（含试管架 + 试管处理）
+                            pipeline = Rack34Pipeline(weights_path="best_rack34.pt",
+                                                      rack_shape=(3, 4),
+                                                      center_holes=[(1, 1), (1, 2)],
+                                                      tube_spacing=0.03,
+                                                      tube_diameter=0.021)
+
+                            rack_and_tubes_data = pipeline.run(
+                                color_image=color_image,
+                                depth_image=depth_image,
+                                T_tcp_in_robot=T_tcp_in_robot,
+                                save_dirs={"masks": obj_dirs["masks"],
+                                           "point_clouds": obj_dirs["point_clouds"],
+                                           "planes": obj_dirs["planes"],
+                                           "remaining": obj_dirs["remaining"],
+                                           "pcd": obj_dirs["pcd"]}
+                            )
+
+                            if rack_and_tubes_data is None:
+                                print(f"[WARN] {obj_class} 检测失败！")
+                                retry = input("是否重新拍摄并检测？(y/n): ").strip().lower()
+                                if retry == "y":
+                                    print("[INFO] 重新拍摄并检测中...")
+                                    continue  # 重新回到 while True 顶部,重新执行拍摄与检测
+                                else:
+                                    print(f"[INFO] 用户选择跳过 {obj_class}")
+                                    break  # 跳出 while True,去处理下一个物体
+                            else:
+                                rack_matrix = rack_and_tubes_data["rack_info"]["rack_matrix"]
+                                print("Rack matrix:", rack_matrix)
+                                for tube in rack_and_tubes_data["tubes_info"]:
+                                    print(f"Tube {tube['label']} pose in robot:\n", tube["Tube_center_pose_in_robot"])
+                                break
                     else:
                         print(f"[WARN] 未定义 {obj_class} 的特定处理逻辑,跳过.")
+                        break
 
                     print(f"[INFO] {target_obj['class_name']} 数据保存完成至 {obj_dirs}")
                     break
@@ -768,63 +778,117 @@ def save_detection_results(results, img_color, save_folder):
     print(f"[保存] 检测JSON: {save_json_path}")
 
 
-def execute_robot_with_command(robot_ctrl):
+# def execute_robot_with_command(robot_ctrl):
+#     """
+#     机械臂任务执行器（前端指令版）
+#     严格顺序：必须初始化成功 -> 才能放置
+#     指令说明：
+#         00 -> 初始化
+#         11 -> 初始化（重试）
+#         01 -> 放置
+#         12 -> 放置（重试）
+#         q  -> 退出
+#     返回:
+#         init_done (bool): 初始化是否完成
+#         place_done (bool): 放置是否完成
+#     """
+#     init_done = False
+#     place_done = False
+#
+#     while True:
+#         cmd = input("请输入指令 (00=初始化, 11=放置, 01,12=初始化退出): ").strip()
+#
+#         # 退出任务
+#         if cmd in ["01", "12"]:
+#             print("[INFO] 用户终止任务")
+#             break
+#
+#         # 初始化
+#         if cmd in ["00"]:
+#             print("[INFO] 执行初始化动作...")
+#             if robot_ctrl.go_init():
+#                 init_done = True
+#                 print("[INFO] 初始化成功")
+#
+#             else:
+#                 retry = input("初始化失败,是否重试？(y/n): ").strip().lower()
+#                 if retry != "y":
+#                     print("[WARN] 用户放弃初始化")
+#                     init_done = False
+#
+#         # 放置
+#         elif cmd in ["11"]:
+#             if not init_done:
+#                 print("[ERROR] 必须先完成初始化才能执行放置")
+#                 continue
+#             print("[INFO] 执行放置动作...")
+#             if robot_ctrl.go_place():
+#                 place_done = True
+#                 print("[INFO] 放置成功")
+#                 return init_done, place_done
+#             else:
+#                 retry = input("放置失败,是否重试？(y/n): ").strip().lower()
+#                 if retry != "y":
+#                     print("[WARN] 用户放弃放置")
+#                     place_done = False
+#         else:
+#             print("[WARN] 无效指令,请重新输入 (00/11=初始化, 01/12=放置, q=退出)")
+#
+#     return init_done, place_done
+
+
+def execute_robot_with_command(robot_ctrl, cmd, init_done=False):
     """
-    机械臂任务执行器
+    机械臂任务执行器（前端指令版）
     严格顺序：必须初始化成功 -> 才能放置
     指令说明：
         00 -> 初始化
-        11 -> 初始化（重试）
-        01 -> 放置
-        12 -> 放置（重试）
+        11 -> 放置
         q  -> 退出
+    参数:
+        robot_ctrl : RobotController 实例
+        cmd (str)  : 前端传来的指令
+        init_done (bool) : 记录是否已初始化（默认 False）
     返回:
         init_done (bool): 初始化是否完成
         place_done (bool): 放置是否完成
+        message (str): 执行过程说明
     """
-    init_done = False
     place_done = False
+    message = ""
 
-    while True:
-        cmd = input("请输入指令 (00=初始化, 11=放置, 01,12=初始化退出): ").strip()
+    # 退出任务
+    if cmd == "q":
+        message = "[INFO] 用户终止任务"
+        return init_done, place_done, message
 
-        # 退出任务
-        if cmd in ["01", "12"]:
-            print("[INFO] 用户终止任务")
-            break
-
-        # 初始化
-        if cmd in ["00"]:
-            print("[INFO] 执行初始化动作...")
-            if robot_ctrl.go_init():
-                init_done = True
-                print("[INFO] 初始化成功")
-
-            else:
-                retry = input("初始化失败,是否重试？(y/n): ").strip().lower()
-                if retry != "y":
-                    print("[WARN] 用户放弃初始化")
-                    init_done = False
-
-        # 放置
-        elif cmd in ["11"]:
-            if not init_done:
-                print("[ERROR] 必须先完成初始化才能执行放置")
-                continue
-            print("[INFO] 执行放置动作...")
-            if robot_ctrl.go_place():
-                place_done = True
-                print("[INFO] 放置成功")
-                return init_done, place_done
-            else:
-                retry = input("放置失败,是否重试？(y/n): ").strip().lower()
-                if retry != "y":
-                    print("[WARN] 用户放弃放置")
-                    place_done = False
+    # 初始化
+    if cmd == "00":
+        message = "[INFO] 执行初始化动作..."
+        if robot_ctrl.go_init():
+            init_done = True
+            message += " 初始化成功"
         else:
-            print("[WARN] 无效指令,请重新输入 (00/11=初始化, 01/12=放置, q=退出)")
+            init_done = False
+            message += " 初始化失败"
 
-    return init_done, place_done
+    # 放置
+    elif cmd == "11":
+        if not init_done:
+            message = "[ERROR] 必须先完成初始化才能执行放置"
+            return init_done, place_done, message
+        message = "[INFO] 执行放置动作..."
+        if robot_ctrl.go_place():
+            place_done = True
+            message += " 放置成功"
+        else:
+            place_done = False
+            message += " 放置失败"
+
+    else:
+        message = "[WARN] 无效指令，必须是 00 / 11 / q"
+
+    return init_done, place_done, message
 
 
 def kinectv3_capture_and_detect(save_folder, depth_intrin, T_camera_to_robot, depth_scale):
@@ -986,7 +1050,8 @@ class Rack510Detector:
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
         # ---- 1. 找 rack510 最大检测框 ----
-        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, "rack510",
+        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
+                                                                                         "rack510",
                                                                                          check_rotate=True)
         if largest_rack is None:
             print("[ERROR] 未检测到 rack510")
@@ -1067,11 +1132,14 @@ class Rack510Detector:
 class TubeProcessor:
     def __init__(self,
                  rack_shape=(5, 10),
+                 center_holes=[(2, 4), (2, 5)],
+                 tube_spacing=0.025,
+                 tube_diameter=0.021,
                  intrinsics=None):
         """
         :param rack_shape: 试管架形状 (行, 列)
         """
-        self.RACK_SHAPE = rack_shape
+
         self.LABEL_TO_NUM = {
             "TubeB": 1,
             "TubeG": 2,
@@ -1083,9 +1151,10 @@ class TubeProcessor:
             'TubeO': [1.0, 0.65, 0.0],
         }
 
-        self.TUBE_SPACING = 0.025  # m
-        self.CENTER_HOLES = [(2, 4), (2, 5)]  # 中心空孔位置
-        self.TUBE_DIAMETER = 0.021  # m
+        self.rack_shape = rack_shape
+        self.center_holes = center_holes
+        self.tube_spacing = tube_spacing
+        self.tube_diameter = tube_diameter
 
         self.intrinsics = intrinsics or {
             "fx": 606.627,
@@ -1127,10 +1196,10 @@ class TubeProcessor:
         rack_pcd.transform(transformation_matrix)
 
         # 创建估计器
-        estimator = SimplifiedTubePoseEstimator(rack_shape=(5, 10),
-                                                center_holes=[(2, 4), (2, 5)],
-                                                tube_spacing=0.025,
-                                                tube_diameter=0.021)
+        estimator = SimplifiedTubePoseEstimator(rack_shape=self.rack_shape,
+                                                center_holes=self.center_holes,
+                                                tube_spacing=self.tube_spacing,
+                                                tube_diameter=self.tube_diameter, )
 
         # 计算试管架平面信息
         normal, center = estimator.compute_rack_plane_info(rack_pcd)
@@ -1189,9 +1258,11 @@ class TubeProcessor:
             else:
                 print("  无位置冲突.")
 
+            save_path = os.path.join(save_dirs["pcd"], "multiple_tubes_projection_result_rack34.png")
+
             # 可视化结果
             estimator.visualize_multiple_tubes(tube_results, label_colors=label_colors,
-                                               save_path="multiple_tubes_projection_result.png")
+                                               save_path=save_path)
 
         # =============================================================================================
 
@@ -1224,7 +1295,7 @@ class TubeProcessor:
         # 生成试管架状态矩阵
         # ------------------------------
 
-        rack_matrix = [[0 for _ in range(self.RACK_SHAPE[1])] for _ in range(self.RACK_SHAPE[0])]
+        rack_matrix = [[0 for _ in range(self.rack_shape[1])] for _ in range(self.rack_shape[0])]
 
         for result in tube_results:
             row, col = result.grid_position
@@ -1235,9 +1306,18 @@ class TubeProcessor:
 
 
 class Rack510Pipeline:
-    def __init__(self, weights_path="best_rack510.pt", rack_shape=(5, 10)):
+    def __init__(self, weights_path="best_rack510.pt",
+                 rack_shape=(5, 10),
+                 center_holes=[(2, 4), (2, 5)],
+                 tube_spacing=0.025,
+                 tube_diameter=0.021
+                 ):
         self.detector = Rack510Detector(weights_path=weights_path)
-        self.tube_processor = TubeProcessor(rack_shape=rack_shape)
+        self.tube_processor = TubeProcessor(rack_shape=rack_shape,
+                                            center_holes=center_holes,
+                                            tube_spacing=tube_spacing,
+                                            tube_diameter=tube_diameter
+                                            )
         self.result = None  # 包括试管架和试管的全部的位姿信息
 
     def _save_rack_and_tubes_info(self, save_folder, rack_results, rack_matrix, tubes_results):
@@ -1311,7 +1391,7 @@ class Rack510Pipeline:
 
 
 class Rack34Detector:
-    DEFAULT_WEIGHTS_PATH = "best_rack510.pt"
+    DEFAULT_WEIGHTS_PATH = "best_rack34.pt"
 
     def __init__(self,
                  weights_path=None,
@@ -1319,6 +1399,7 @@ class Rack34Detector:
                  model_type="vit_h",
                  use_new_intrinsics=False,
                  template_dir=None):
+
         """初始化固定资源"""
         self.sam_checkpoint = sam_checkpoint
         self.model_type = model_type
@@ -1392,7 +1473,7 @@ class Rack34Detector:
         :param pred_results: 目标检测预测结果
         :param mask_dir: 保存 mask 的目录
         :param pointcloud_dir: 保存点云的目录
-        :return: T_rack510_in_cam (4x4 numpy array) 或 None
+        :return: T_rack34_in_cam (4x4 numpy array) 或 None
         """
 
         os.makedirs(mask_dir, exist_ok=True)
@@ -1402,8 +1483,14 @@ class Rack34Detector:
 
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
+        # 保存 img_detected
+        img_detected_path = os.path.join(pointcloud_dir, 'img_detected.jpg')
+        cv2.imwrite(img_detected_path, img_detected)
+        print(f"img_detected 已保存: {img_detected_path}")
+
         # ---- 1. 找 rack34 最大检测框 ----
-        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, "rack34",
+        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
+                                                                                         "rack34",
                                                                                          check_rotate=True)
         if largest_rack is None:
             print("[ERROR] 未检测到 rack34")
@@ -1483,12 +1570,15 @@ class Rack34Detector:
 
 class Tube34Processor:
     def __init__(self,
-                 rack_shape=(5, 10),
-                 intrinsics=None):
+                 rack_shape=(3, 4),
+                 center_holes=[(1, 1), (1, 2)],
+                 tube_spacing=0.03,
+                 tube_diameter=0.021,
+                 intrinsics=None,
+                 ):
         """
         :param rack_shape: 试管架形状 (行, 列)
         """
-        self.RACK_SHAPE = rack_shape
         self.LABEL_TO_NUM = {
             "TubeB": 1,
             "TubeG": 2,
@@ -1499,10 +1589,10 @@ class Tube34Processor:
             'TubeG': [0, 1, 0],
             'TubeO': [1.0, 0.65, 0.0],
         }
-
-        self.TUBE_SPACING = 0.025  # m
-        self.CENTER_HOLES = [(2, 4), (2, 5)]  # 中心空孔位置
-        self.TUBE_DIAMETER = 0.021  # m
+        self.rack_shape = rack_shape
+        self.center_holes = center_holes
+        self.tube_spacing = tube_spacing
+        self.tube_diameter = tube_diameter
 
         self.intrinsics = intrinsics or {
             "fx": 606.627,
@@ -1544,10 +1634,11 @@ class Tube34Processor:
         rack_pcd.transform(transformation_matrix)
 
         # 创建估计器
-        estimator = SimplifiedTubePoseEstimator(rack_shape=(5, 10),
-                                                center_holes=[(2, 4), (2, 5)],
-                                                tube_spacing=0.025,
-                                                tube_diameter=0.021)
+        estimator = SimplifiedTubePoseEstimator(rack_shape=self.rack_shape,
+                                                center_holes=self.center_holes,
+                                                tube_spacing=self.tube_spacing,
+                                                tube_diameter=self.tube_diameter,
+                                                )
 
         # 计算试管架平面信息
         normal, center = estimator.compute_rack_plane_info(rack_pcd)
@@ -1606,9 +1697,14 @@ class Tube34Processor:
             else:
                 print("  无位置冲突.")
 
+            save_path = os.path.join(save_dirs["pcd"], "multiple_tubes_projection_result_rack510.png")
+
             # 可视化结果
-            estimator.visualize_multiple_tubes(tube_results, label_colors=label_colors,
-                                               save_path="multiple_tubes_projection_result.png")
+            estimator.visualize_multiple_tubes(tube_results, label_colors=label_colors, save_path=save_path)
+
+            # # 可视化结果
+            # estimator.visualize_multiple_tubes(tube_results, label_colors=label_colors,
+            #                                    save_path="multiple_tubes_projection_result.png")
 
         # =============================================================================================
 
@@ -1641,7 +1737,7 @@ class Tube34Processor:
         # 生成试管架状态矩阵
         # ------------------------------
 
-        rack_matrix = [[0 for _ in range(self.RACK_SHAPE[1])] for _ in range(self.RACK_SHAPE[0])]
+        rack_matrix = [[0 for _ in range(self.rack_shape[1])] for _ in range(self.rack_shape[0])]
 
         for result in tube_results:
             row, col = result.grid_position
@@ -1652,9 +1748,17 @@ class Tube34Processor:
 
 
 class Rack34Pipeline:
-    def __init__(self, weights_path="best_rack510.pt", rack_shape=(5, 10)):
+    def __init__(self, weights_path="best_rack34.pt",
+                 rack_shape=(3, 4),
+                 center_holes=[(1, 1), (1, 2)],
+                 tube_spacing=0.03,
+                 tube_diameter=0.021):
         self.detector = Rack34Detector(weights_path=weights_path)
-        self.tube_processor = Tube34Processor(rack_shape=rack_shape)
+        self.tube_processor = Tube34Processor(rack_shape=rack_shape,
+                                              center_holes=center_holes,
+                                              tube_spacing=tube_spacing,
+                                              tube_diameter=tube_diameter
+                                              )
         self.result = None  # 包括试管架和试管的全部的位姿信息
 
     def _save_rack34_and_tubes_info(self, save_folder, rack_results, rack_matrix, tubes_results):
@@ -1679,7 +1783,7 @@ class Rack34Pipeline:
         }
 
         os.makedirs(save_folder, exist_ok=True)
-        save_path = os.path.join(save_folder, "rack_and_tubes_pose_robot.json")
+        save_path = os.path.join(save_folder, "T_rack34_in_robot.json")
         with open(save_path, "w", encoding="utf-8") as f:
             json.dump(robot_poses_data, f, indent=4, ensure_ascii=False)
         print(f"已保存到: {save_path}")
@@ -1687,9 +1791,9 @@ class Rack34Pipeline:
         return robot_poses_data
 
     def run(self, color_image, depth_image, T_tcp_in_robot, save_dirs):
-        print("[INFO] === Rack510Pipeline.run() 开始执行 ===")
-        # print(f"[INFO] 保存路径参数: {save_dirs}")
-        print("[INFO] Step 1: 开始检测 rack510 ...")
+        print("[INFO] === Rack34Pipeline.run() 开始执行 ===")
+
+        print("[INFO] Step 1: 开始检测 rack34 ...")
         rack_result = self.detector.process_rack34_from_image(
             color_img=color_image,
             depth_img=depth_image,
@@ -1699,7 +1803,7 @@ class Rack34Pipeline:
             plane_dir=save_dirs["planes"],
             remaining_dir=save_dirs["remaining"]
         )
-        print("[INFO] Step 1: rack510 检测完成")
+        print("[INFO] Step 1: rack34 检测完成")
 
         if rack_result is None:
             return None
@@ -1719,12 +1823,12 @@ class Rack34Pipeline:
         print("[INFO] Step 2: 试管处理完成")
 
         print("[INFO] Step 3: 保存 rack 与 tubes 信息 ...")
-        Rack510_and_tubes_result = self._save_rack_and_tubes_info(save_dirs["pcd"], rack_result, rack_matrix,
-                                                                  tubes_robot_info)
+        Rack34_and_tubes_result = self._save_rack34_and_tubes_info(save_dirs["pcd"], rack_result, rack_matrix,
+                                                                   tubes_robot_info)
         print("[INFO] Step 3: 数据保存完成")
         print("[INFO] === Rack510Pipeline.run() 执行结束 ===")
 
-        return Rack510_and_tubes_result
+        return Rack34_and_tubes_result
 
 
 class RefrigeratorDetector:
@@ -1859,7 +1963,8 @@ class RefrigeratorDetector:
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
         # ---- 1. 找 rack510 最大检测框 ----
-        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, "IC")
+        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
+                                                                                         "IC")
         if largest_rack is None:
             print("[ERROR] 未检测到 refrigerator")
             return None
@@ -2067,7 +2172,8 @@ class CentrifugeDetector:
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
         # ---- 1. 找 centrifuge 最大检测框 ----
-        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, "HC")
+        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
+                                                                                         "H1")
         if largest_rack is None:
             print("[ERROR] 未检测到 centrifuge")
             return None
@@ -2256,7 +2362,8 @@ class LockerDetector:
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
         # ---- 1. 找 locker 最大检测框 ----
-        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, "G0")
+        largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results,
+                                                                                         self.detect_api, "G0")
         if largest_rack is None:
             print("[ERROR] 未检测到 locker")
             return None

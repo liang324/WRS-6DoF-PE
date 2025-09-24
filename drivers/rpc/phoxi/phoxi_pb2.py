@@ -58,7 +58,7 @@ _MATKW = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='MatKW.data', index=0,
+      name='log_filename', full_name='MatKW.log_filename', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,

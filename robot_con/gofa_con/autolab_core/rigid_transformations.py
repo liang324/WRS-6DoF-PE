@@ -77,9 +77,9 @@ class RigidTransform(object):
             1.0.
         """
         if not isinstance(from_frame, str) and not isinstance(from_frame, unicode):
-            raise ValueError('Must provide string name of input frame of data')
+            raise ValueError('Must provide string name of input frame of log_filename')
         if not isinstance(to_frame, str) and not isinstance(to_frame, unicode):
-            raise ValueError('Must provide string name of output frame of data')
+            raise ValueError('Must provide string name of output frame of log_filename')
 
         self.rotation = rotation
         self.translation = translation
@@ -428,7 +428,7 @@ class RigidTransform(object):
             x = points.data
             x_tf = self.rotation.dot(x)
         else:
-            # extract numpy data, homogenize, and transform
+            # extract numpy log_filename, homogenize, and transform
             x = points.data
             if len(x.shape) == 1:
                 x = x[:, np.newaxis]
@@ -1233,7 +1233,7 @@ class SimilarityTransform(RigidTransform):
             x = points.data
             x_tf = self.rotation.dot(x)
         else:
-            # extract numpy data, homogenize, and transform
+            # extract numpy log_filename, homogenize, and transform
             x = points.data
             if len(x.shape) == 1:
                 x = x[:, np.newaxis]

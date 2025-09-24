@@ -294,7 +294,7 @@ class BoundSkinPrimitive(object):
 
 
 class Morph(Controller):
-    """Class containing data collada holds in the <morph> tag"""
+    """Class containing log_filename collada holds in the <morph> tag"""
 
     def __init__(self, source_geometry, target_list, xmlnode=None):
         """Create a morph instance

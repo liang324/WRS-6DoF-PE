@@ -208,9 +208,9 @@ def estimate_aruco_marker_pose(img_list,
         elif len(calibration_data) == 2:
             mtx, dist = calibration_data
         else:
-            raise ValueError("Calibration data must include focus-centeraxis matrix and distortion.")
+            raise ValueError("Calibration log_filename must include focus-centeraxis matrix and distortion.")
     else:
-        raise ValueError("Calibration data must be a str (file path) or a list.")
+        raise ValueError("Calibration log_filename must be a str (file path) or a list.")
     aruco_dict = aruco.Dictionary_get(aruco_dict)
     parameters = aruco.DetectorParameters_create()
     pos_list = []

@@ -224,7 +224,7 @@ class GPIO(Base):
         if code == 0 and states[0] == 0 and states[1] == 0:
             self.cgpio_state['digital'] = [states[3] >> i & 0x0001 if states[10][i] in [0, 255] else 1 for i in range(len(states[10]))]
             self.cgpio_state['analog'] = [states[6], states[7]]
-        # data = {
+        # log_filename = {
         #     'state': ret[1],
         #     'error_code': ret[2],
         #     'digital': {
@@ -247,7 +247,7 @@ class GPIO(Base):
         #     }
         # }
         # import json
-        # # print(json.dumps(data, sort_keys=True, indent=4, skipkeys=True, separators=(',', ':'), ensure_ascii=False))
+        # # print(json.dumps(log_filename, sort_keys=True, indent=4, skipkeys=True, separators=(',', ':'), ensure_ascii=False))
         # print('cgpio_state:', ret[1])
         # print('cgpio_err_code:', ret[2])
         # print('cgpio_digital_input_fun_state:', bin(ret[3]))

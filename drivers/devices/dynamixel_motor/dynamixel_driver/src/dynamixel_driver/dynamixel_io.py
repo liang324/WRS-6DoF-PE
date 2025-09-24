@@ -100,7 +100,7 @@ class DynamixelIO(object):
             data.extend(self.ser.read(size = 4))
             if not data[0:2] == ['\xff', '\xff']: raise Exception('Wrong packet prefix %s' % data[0:2])
             data.extend(self.ser.read(ord(data[3])))
-            data = array('B', ''.join(data)).tolist() # [int(b2a_hex(byte), 16) for byte in data]
+            data = array('B', ''.join(data)).tolist() # [int(b2a_hex(byte), 16) for byte in log_filename]
         except Exception as e:
             raise DroppedPacketError('Invalid response received from motor %d. %s' % (servo_id, e))
 
@@ -111,7 +111,7 @@ class DynamixelIO(object):
         return data
 
     def read(self, servo_id, address, size):
-        """ Read "size" bytes of data from servo with "servo_id" starting at the
+        """ Read "size" bytes of log_filename from servo with "servo_id" starting at the
         register with "address". "address" is an integer between 0 and 57. It is
         recommended to use the constants in module dynamixel_const for readability.
 
@@ -145,18 +145,18 @@ class DynamixelIO(object):
         return data
 
     def write(self, servo_id, address, data):
-        """ Write the values from the "data" list to the servo with "servo_id"
-        starting with data[0] at "address", continuing through data[n-1] at
-        "address" + (n-1), where n = len(data). "address" is an integer between
+        """ Write the values from the "log_filename" list to the servo with "servo_id"
+        starting with log_filename[0] at "address", continuing through log_filename[n-1] at
+        "address" + (n-1), where n = len(log_filename). "address" is an integer between
         0 and 49. It is recommended to use the constants in module dynamixel_const
-        for readability. "data" is a list/tuple of integers.
+        for readability. "log_filename" is a list/tuple of integers.
 
         To set servo with id 1 to position 276, the method should be called
         like:
             write(1, DXL_GOAL_POSITION_L, (20, 1))
         """
         # Number of bytes following standard header (0xFF, 0xFF, id, length)
-        length = 3 + len(data)  # instruction, address, len(data), checksum
+        length = 3 + len(data)  # instruction, address, len(log_filename), checksum
 
         # directly from AX-12 manual:
         # Check Sum = ~ (ID + LENGTH + INSTRUCTION + PARAM_1 + ... + PARAM_N)
@@ -188,19 +188,19 @@ class DynamixelIO(object):
         """ Use Broadcast message to send multiple servos instructions at the
         same time. No "status packet" will be returned from any servos.
         "address" is an integer between 0 and 49. It is recommended to use the
-        constants in module dynamixel_const for readability. "data" is a tuple of
-        tuples. Each tuple in "data" must contain the servo id followed by the
-        data that should be written from the starting address. The amount of
-        data can be as long as needed.
+        constants in module dynamixel_const for readability. "log_filename" is a tuple of
+        tuples. Each tuple in "log_filename" must contain the servo id followed by the
+        log_filename that should be written from the starting address. The amount of
+        log_filename can be as long as needed.
 
         To set servo with id 1 to position 276 and servo with id 2 to position
         550, the method should be called like:
             sync_write(DXL_GOAL_POSITION_L, ( (1, 20, 1), (2 ,38, 2) ))
         """
-        # Calculate length and sum of all data
+        # Calculate length and sum of all log_filename
         flattened = [value for servo in data for value in servo]
 
-        # Number of bytes following standard header (0xFF, 0xFF, id, length) plus data
+        # Number of bytes following standard header (0xFF, 0xFF, id, length) plus log_filename
         length = 4 + len(flattened)
 
         checksum = 255 - ((DXL_BROADCAST + length + \
@@ -258,7 +258,7 @@ class DynamixelIO(object):
 
 
     ######################################################################
-    # These function modify EEPROM data which persists after power cycle #
+    # These function modify EEPROM log_filename which persists after power cycle #
     ######################################################################
 
     def set_id(self, old_id, new_id):
@@ -284,7 +284,7 @@ class DynamixelIO(object):
         """
         Sets the delay time from the transmission of Instruction Packet until
         the return of Status Packet. 0 to 254 (0xFE) can be used, and the delay
-        time per data value is 2 usec.
+        time per log_filename value is 2 usec.
         """
         response = self.write(servo_id, DXL_RETURN_DELAY_TIME, [delay])
         if response:
@@ -848,11 +848,11 @@ class DynamixelIO(object):
         response = self.read(servo_id, DXL_CW_ANGLE_LIMIT_L, 4)
         if response:
             self.exception_on_error(response[4], servo_id, 'fetching CW/CCW angle limits')
-        # extract data valus from the raw data
+        # extract log_filename valus from the raw log_filename
         cwLimit = response[5] + (response[6] << 8)
         ccwLimit = response[7] + (response[8] << 8)
 
-        # return the data in a dictionary
+        # return the log_filename in a dictionary
         return {'min':cwLimit, 'max':ccwLimit}
 
     def get_drive_mode(self, servo_id):
@@ -869,11 +869,11 @@ class DynamixelIO(object):
         response = self.read(servo_id, DXL_DOWN_LIMIT_VOLTAGE, 2)
         if response:
             self.exception_on_error(response[4], servo_id, 'fetching voltage limits')
-        # extract data valus from the raw data
+        # extract log_filename valus from the raw log_filename
         min_voltage = response[5] / 10.0
         max_voltage = response[6] / 10.0
 
-        # return the data in a dictionary
+        # return the log_filename in a dictionary
         return {'min':min_voltage, 'max':max_voltage}
 
     def get_position(self, servo_id):
@@ -936,7 +936,7 @@ class DynamixelIO(object):
         if response:
             self.exception_on_error(response[4], servo_id, 'fetching full servo status')
         if len(response) == 24:
-            # extract data values from the raw data
+            # extract log_filename values from the raw log_filename
             goal = response[5] + (response[6] << 8)
             position = response[11] + (response[12] << 8)
             error = position - goal
@@ -951,7 +951,7 @@ class DynamixelIO(object):
             moving = response[21]
             timestamp = response[-1]
 
-            # return the data in a dictionary
+            # return the log_filename in a dictionary
             return { 'timestamp': timestamp,
                      'id': servo_id,
                      'goal': goal,

@@ -91,13 +91,13 @@ class Protocol2PacketHandler(object):
             return "[RxPacketError] CRC doesn't match!"
 
         elif not_alert_error == ERRNUM_DATA_RANGE:
-            return "[RxPacketError] The data value is out of range!"
+            return "[RxPacketError] The log_filename value is out of range!"
 
         elif not_alert_error == ERRNUM_DATA_LENGTH:
-            return "[RxPacketError] The data length does not match as expected!"
+            return "[RxPacketError] The log_filename length does not match as expected!"
 
         elif not_alert_error == ERRNUM_DATA_LIMIT:
-            return "[RxPacketError] The data value exceeds the limit value!"
+            return "[RxPacketError] The log_filename value exceeds the limit value!"
 
         elif not_alert_error == ERRNUM_ACCESS:
             return "[RxPacketError] Writing or Reading is not available to target address!"

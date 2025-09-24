@@ -171,7 +171,7 @@ class KinectV2(PyKinectRuntime.PyKinectRuntime):
         :return:
 
         author: webo
-        data: 201712227
+        log_filename: 201712227
         """
         self.__depth_record = self.__depth
 

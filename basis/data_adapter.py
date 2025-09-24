@@ -10,7 +10,7 @@ from panda3d.core import NodePath, Vec3, Mat3, Mat4, LQuaternion
 from typing import List
 
 
-# data manipulation
+# log_filename manipulation
 def gen_colorarray(ncolors=1, alpha=1, nonrandcolor=None) -> List[List[float]]:
     """
     生成一个颜色数组

@@ -100,7 +100,7 @@ class Polygon(object):
 
 
 class Polylist(primitive.Primitive):
-    """Class containing the data COLLADA puts in a <polylist> tag, a collection of
+    """Class containing the log_filename COLLADA puts in a <polylist> tag, a collection of
     polygons. The Polylist objects is read-only. To modify a Polylist, create a new
     instance using :meth:`collada.geometry.Geometry.createPolylist`.
 

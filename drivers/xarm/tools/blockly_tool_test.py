@@ -197,11 +197,11 @@ class BlocklyTool(object):
             
             
             # Register error/warn changed callback
-            def error_warn_change_callback(data):
-                if data and data[\'error_code\'] != 0:
+            def error_warn_change_callback(log_filename):
+                if log_filename and log_filename[\'error_code\'] != 0:
                     arm.set_state(4)
                     params['quit'] = True
-                    print('err={}, quit'.format(data['error_code']))
+                    print('err={}, quit'.format(log_filename['error_code']))
             arm.register_error_warn_changed_callback(error_warn_change_callback)
             """
             self._insert_codes_to_file(codes)
@@ -210,7 +210,7 @@ class BlocklyTool(object):
             
             
             # Register state changed callback
-            def state_changed_callback(data):
+            def state_changed_callback(log_filename):
                 if arm.version_number[0] >= 1 and arm.version_number[1] >= 1 and arm.version_number[2] > 0:
                     params['quit'] = True')
                     print('state=4, quit')
@@ -223,8 +223,8 @@ class BlocklyTool(object):
         
         # Register counter value changed callback
         if hasattr(arm, 'register_count_changed_callback'):
-            def count_changed_callback(data):
-                print('counter val: {}'.format(data['count']))
+            def count_changed_callback(log_filename):
+                print('counter val: {}'.format(log_filename['count']))
             arm.register_count_changed_callback(count_changed_callback)
         """
         self._insert_codes_to_file(codes)
