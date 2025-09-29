@@ -78,7 +78,8 @@ class RobotController:
         self.base, self.rbt_s, self.rbt_r, self.grip_r, self.rrtc_s, self.ppp_s = self.init_robot_system()
 
     def init_robot_system(self, open_width=0.023):
-        base = wd.World(cam_pos=[4.16951, 1.8771, 1.70872], lookat_pos=[0, 0, 0.5])
+        # base = wd.World(cam_pos=[4.16951, 1.8771, 1.70872], lookat_pos=[0, 0, 0.5])
+        base = None
         rbt_s = gf5.GOFA5()
         rbt_r = gofa_con.GoFaArmController()
         grip_r = dh_r.MainGripper('com3', speed=100)
@@ -323,7 +324,7 @@ class RobotController:
                                 obj_dirs["pcd"])
 
                             print("[INFO] === 开始执行 Refrigerator open 位姿重定位任务 ===")
-                            open_detector = RefrigeratorDetector(mode="open", weights_path="best.pt")
+                            open_detector = RefrigeratorDetector(mode="open", weights_path="best_rcl.pt")
                             Refrigerator_result = open_detector.process_refrigerator_from_image(
                                 color_img=color_image,
                                 depth_img=depth_image,
@@ -357,7 +358,7 @@ class RobotController:
                                 obj_dirs["pcd"])
 
                             print("[INFO] === 开始执行 Refrigerator close 位姿重定位任务 ===")
-                            close_detector = RefrigeratorDetector(mode="close", weights_path="best.pt")
+                            close_detector = RefrigeratorDetector(mode="close", weights_path="best_rcl.pt")
                             Refrigerator_result = close_detector.process_refrigerator_from_image(
                                 color_img=color_image,
                                 depth_img=depth_image,
@@ -390,7 +391,7 @@ class RobotController:
                             color_image, save_colorpath, depth_image, save_depthpath, original_point_cloud, save_pcdpath = capture_point_cloud(
                                 obj_dirs["pcd"])
                             print("[INFO] === 开始执行 Centrifuge open 位姿重定位任务 ===")
-                            open_detector = CentrifugeDetector(mode="open", weights_path="best.pt")
+                            open_detector = CentrifugeDetector(mode="open", weights_path="best_rcl.pt")
                             Centrifuge_result = open_detector.process_centrifuge_from_image(
                                 color_img=color_image,
                                 depth_img=depth_image,
@@ -423,7 +424,7 @@ class RobotController:
                             color_image, save_colorpath, depth_image, save_depthpath, original_point_cloud, save_pcdpath = capture_point_cloud(
                                 obj_dirs["pcd"])
                             print("[INFO] === 开始执行 Centrifuge close 位姿重定位任务 ===")
-                            close_detector = CentrifugeDetector(mode="close", weights_path="best.pt")
+                            close_detector = CentrifugeDetector(mode="close", weights_path="best_rcl.pt")
                             Centrifuge_result = close_detector.process_centrifuge_from_image(
                                 color_img=color_image,
                                 depth_img=depth_image,
@@ -456,7 +457,7 @@ class RobotController:
                             color_image, save_colorpath, depth_image, save_depthpath, original_point_cloud, save_pcdpath = capture_point_cloud(
                                 obj_dirs["pcd"])
                             print("[INFO] === 开始执行 Locker 位姿重定位任务 ===")
-                            Locker_detector = LockerDetector(weights_path="best.pt")
+                            Locker_detector = LockerDetector(weights_path="best_rcl.pt")
                             Locker_result = Locker_detector.process_locker_from_image(
                                 color_img=color_image,
                                 depth_img=depth_image,
@@ -610,9 +611,17 @@ def prepare_object_save_dirs(base_folder, class_name):
     return subfolders, object_root
 
 
-def capture_kinect_data(save_folder, config_file='default_config.json'):
-    """调用 Azure Kinect 采集彩色、深度、点云数据（人工触发）,返回是否成功+文件路径"""
-
+def capture_kinect_data(save_folder,
+                        config_file='default_config.json',
+                        mode='auto'):
+    """
+    拍摄一次彩色、深度、点云数据
+    :param save_folder: 保存文件夹
+    :param config_file: Kinect 配置文件
+    :param mode: 'auto' 自动拍一次 或 'manual' 等待人工触发
+    :return: (拍摄成功?, color_path, depth_path)
+    """
+    # 清空并确保文件夹存在
     clear_folder(save_folder)
     os.makedirs(save_folder, exist_ok=True)
 
@@ -632,9 +641,11 @@ def capture_kinect_data(save_folder, config_file='default_config.json'):
     r = RecorderWithCallback(config, args.device, current_dir_path, args.align_depth_to_color, args)
 
     # 获取模式
-    mode = input("输入录制模式, manual 或 auto: ")
-    record_fps = float(input("输入录制帧率: ")) if mode == "auto" else -1
-    print("record_fps", record_fps)
+    # mode = input("输入录制模式, manual 或 auto: ")
+    mode = mode.strip().lower()  # manual 或 auto
+    record_fps = 1.0  # 默认 1 帧/秒
+    # record_fps = float(input("输入录制帧率: ")) if mode == "auto" else -1
+    # print("record_fps", record_fps)
 
     color_path, depth_path, ply_path = r.run(mode, record_fps, args.output)
     r.recorder.close_record()
@@ -778,117 +789,118 @@ def save_detection_results(results, img_color, save_folder):
     print(f"[保存] 检测JSON: {save_json_path}")
 
 
-# def execute_robot_with_command(robot_ctrl):
-#     """
-#     机械臂任务执行器（前端指令版）
-#     严格顺序：必须初始化成功 -> 才能放置
-#     指令说明：
-#         00 -> 初始化
-#         11 -> 初始化（重试）
-#         01 -> 放置
-#         12 -> 放置（重试）
-#         q  -> 退出
-#     返回:
-#         init_done (bool): 初始化是否完成
-#         place_done (bool): 放置是否完成
-#     """
-#     init_done = False
-#     place_done = False
-#
-#     while True:
-#         cmd = input("请输入指令 (00=初始化, 11=放置, 01,12=初始化退出): ").strip()
-#
-#         # 退出任务
-#         if cmd in ["01", "12"]:
-#             print("[INFO] 用户终止任务")
-#             break
-#
-#         # 初始化
-#         if cmd in ["00"]:
-#             print("[INFO] 执行初始化动作...")
-#             if robot_ctrl.go_init():
-#                 init_done = True
-#                 print("[INFO] 初始化成功")
-#
-#             else:
-#                 retry = input("初始化失败,是否重试？(y/n): ").strip().lower()
-#                 if retry != "y":
-#                     print("[WARN] 用户放弃初始化")
-#                     init_done = False
-#
-#         # 放置
-#         elif cmd in ["11"]:
-#             if not init_done:
-#                 print("[ERROR] 必须先完成初始化才能执行放置")
-#                 continue
-#             print("[INFO] 执行放置动作...")
-#             if robot_ctrl.go_place():
-#                 place_done = True
-#                 print("[INFO] 放置成功")
-#                 return init_done, place_done
-#             else:
-#                 retry = input("放置失败,是否重试？(y/n): ").strip().lower()
-#                 if retry != "y":
-#                     print("[WARN] 用户放弃放置")
-#                     place_done = False
-#         else:
-#             print("[WARN] 无效指令,请重新输入 (00/11=初始化, 01/12=放置, q=退出)")
-#
-#     return init_done, place_done
-
-
-def execute_robot_with_command(robot_ctrl, cmd, init_done=False):
+def execute_robot_with_command(robot_ctrl):
     """
     机械臂任务执行器（前端指令版）
     严格顺序：必须初始化成功 -> 才能放置
     指令说明：
         00 -> 初始化
-        11 -> 放置
+        11 -> 初始化（重试）
+        01 -> 放置
+        12 -> 放置（重试）
         q  -> 退出
-    参数:
-        robot_ctrl : RobotController 实例
-        cmd (str)  : 前端传来的指令
-        init_done (bool) : 记录是否已初始化（默认 False）
     返回:
         init_done (bool): 初始化是否完成
         place_done (bool): 放置是否完成
-        message (str): 执行过程说明
     """
+    init_done = False
     place_done = False
-    message = ""
 
-    # 退出任务
-    if cmd == "q":
-        message = "[INFO] 用户终止任务"
-        return init_done, place_done, message
+    while True:
+        cmd = input("请输入指令 (00=初始化, 11=放置, 01,12=初始化退出): ").strip()
 
-    # 初始化
-    if cmd == "00":
-        message = "[INFO] 执行初始化动作..."
-        if robot_ctrl.go_init():
-            init_done = True
-            message += " 初始化成功"
+        # 退出任务
+        if cmd in ["01", "12"]:
+            print("[INFO] 用户终止任务")
+            break
+
+        # 初始化
+        if cmd in ["00"]:
+            print("[INFO] 执行初始化动作...")
+            if robot_ctrl.go_init():
+                init_done = True
+                print("[INFO] 初始化成功")
+
+            else:
+                retry = input("初始化失败,是否重试？(y/n): ").strip().lower()
+                if retry != "y":
+                    print("[WARN] 用户放弃初始化")
+                    init_done = False
+
+        # 放置
+        elif cmd in ["11"]:
+            if not init_done:
+                print("[ERROR] 必须先完成初始化才能执行放置")
+                continue
+            print("[INFO] 执行放置动作...")
+            if robot_ctrl.go_place():
+                place_done = True
+                print("[INFO] 放置成功")
+                return init_done, place_done
+            else:
+                retry = input("放置失败,是否重试？(y/n): ").strip().lower()
+                if retry != "y":
+                    print("[WARN] 用户放弃放置")
+                    place_done = False
         else:
-            init_done = False
-            message += " 初始化失败"
+            print("[WARN] 无效指令,请重新输入 (00/11=初始化, 01/12=放置, q=退出)")
 
-    # 放置
-    elif cmd == "11":
-        if not init_done:
-            message = "[ERROR] 必须先完成初始化才能执行放置"
-            return init_done, place_done, message
-        message = "[INFO] 执行放置动作..."
-        if robot_ctrl.go_place():
-            place_done = True
-            message += " 放置成功"
-        else:
-            place_done = False
-            message += " 放置失败"
+    return init_done, place_done
 
-    else:
-        message = "[WARN] 无效指令，必须是 00 / 11 / q"
 
-    return init_done, place_done, message
+#
+# def execute_robot_with_command(robot_ctrl, cmd, init_done=False):
+#     """
+#     机械臂任务执行器（前端指令版）
+#     严格顺序：必须初始化成功 -> 才能放置
+#     指令说明：
+#         00 -> 初始化
+#         11 -> 放置
+#         q  -> 退出
+#     参数:
+#         robot_ctrl : RobotController 实例
+#         cmd (str)  : 前端传来的指令
+#         init_done (bool) : 记录是否已初始化（默认 False）
+#     返回:
+#         init_done (bool): 初始化是否完成
+#         place_done (bool): 放置是否完成
+#         message (str): 执行过程说明
+#     """
+#     place_done = False
+#     message = ""
+#
+#     # 退出任务
+#     if cmd == "q":
+#         message = "[INFO] 用户终止任务"
+#         return init_done, place_done, message
+#
+#     # 初始化
+#     if cmd == "00":
+#         message = "[INFO] 执行初始化动作..."
+#         if robot_ctrl.go_init():
+#             init_done = True
+#             message += " 初始化成功"
+#         else:
+#             init_done = False
+#             message += " 初始化失败"
+#
+#     # 放置
+#     elif cmd == "11":
+#         if not init_done:
+#             message = "[ERROR] 必须先完成初始化才能执行放置"
+#             return init_done, place_done, message
+#         message = "[INFO] 执行放置动作..."
+#         if robot_ctrl.go_place():
+#             place_done = True
+#             message += " 放置成功"
+#         else:
+#             place_done = False
+#             message += " 放置失败"
+#
+#     else:
+#         message = "[WARN] 无效指令，必须是 00 / 11 / q"
+#
+#     return init_done, place_done, message
 
 
 def kinectv3_capture_and_detect(save_folder, depth_intrin, T_camera_to_robot, depth_scale):
@@ -1832,7 +1844,7 @@ class Rack34Pipeline:
 
 
 class RefrigeratorDetector:
-    DEFAULT_WEIGHTS_PATH = "best.pt"
+    DEFAULT_WEIGHTS_PATH = "best_rcl.pt"
 
     def __init__(self,
                  mode="open",  # "open" 或 "close"
@@ -1962,9 +1974,9 @@ class RefrigeratorDetector:
 
         img_detected, pred_results, _ = self.detect_api.detect([color_img])
 
-        # ---- 1. 找 rack510 最大检测框 ----
+        # ---- 1. 找 refrigerator 最大检测框 ----
         largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
-                                                                                         "IC")
+                                                                                         "cre")
         if largest_rack is None:
             print("[ERROR] 未检测到 refrigerator")
             return None
@@ -2042,7 +2054,7 @@ class RefrigeratorDetector:
 
 
 class CentrifugeDetector:
-    DEFAULT_WEIGHTS_PATH = "best.pt"
+    DEFAULT_WEIGHTS_PATH = "best_rcl.pt"
 
     def __init__(self,
                  mode="open",  # "open" 或 "close"
@@ -2173,7 +2185,7 @@ class CentrifugeDetector:
 
         # ---- 1. 找 centrifuge 最大检测框 ----
         largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results, self.detect_api,
-                                                                                         "H1")
+                                                                                         "cce")
         if largest_rack is None:
             print("[ERROR] 未检测到 centrifuge")
             return None
@@ -2248,7 +2260,7 @@ class CentrifugeDetector:
 
 
 class LockerDetector:
-    DEFAULT_WEIGHTS_PATH = "best.pt"
+    DEFAULT_WEIGHTS_PATH = "best_rcl.pt"
 
     def __init__(self,
                  weights_path=None,
@@ -2363,7 +2375,7 @@ class LockerDetector:
 
         # ---- 1. 找 locker 最大检测框 ----
         largest_rack, rotate_matrix, bbox_rack, conf, label_name = select_largest_object(pred_results,
-                                                                                         self.detect_api, "G0")
+                                                                                         self.detect_api, "locker")
         if largest_rack is None:
             print("[ERROR] 未检测到 locker")
             return None

@@ -1,37 +1,104 @@
+/* 全局页面样式 */
 body {
-    font-family: Arial, sans-serif;      /* 页面使用 Arial 字体，如果系统没有则用默认无衬线字体 */
-    background-color: #f6f8fa;           /* 背景颜色为淡灰色，看起来柔和 */
-    text-align: center;                  /* 页面内容居中显示 */
-    padding: 30px;                        /* 页面四周留 30px 间距 */
+    font-family: Arial, sans-serif;        /* 使用 Arial 或系统无衬线字体 */
+    background-color: #f6f8fa;             /* 淡灰色背景 */
+    display: flex;                          /* 使用 Flex 布局 */
+    flex-direction: column;                 /* 垂直方向排列 */
+    align-items: center;                    /* 水平居中 */
+    padding: 20px;                           /* 页面内边距 */
+    margin: 0;                               /* 去掉默认外边距 */
 }
 
-h2 {
-    color: #333;                          /* 二级标题文字为深灰色 */
+/* 标题样式 */
+h1 {
+    margin-bottom: 20px;
 }
 
+/* 按钮样式 */
 button {
-    background-color: #4CAF50;            /* 按钮背景颜色为绿色（代表“执行”、“确认”） */
-    color: white;                         /* 按钮文字为白色，和绿色形成对比 */
-    padding: 12px 24px;                   /* 上下间距 12px，左右间距 24px，让按钮看起来不拥挤 */
-    margin: 5px;                          /* 按钮外间距 5px，按钮之间有空隙 */
-    border: none;                         /* 移除默认边框 */
-    border-radius: 5px;                   /* 按钮圆角 */
-    font-size: 16px;                      /* 字体大小适中 */
-    cursor: pointer;                      /* 鼠标悬停时显示手型图标 */
+    background-color: #4CAF50;               /* 绿色背景 */
+    color: white;                            /* 白色文字 */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;                        /* 内边距 */
+    font-size: 14px;
+    cursor: pointer;
+    margin: 5px;
 }
-
 button:hover {
-    background-color: #45a049;            /* 鼠标悬停时，按钮颜色变成稍微深一点的绿色 */
+    background-color: #0056b3;               /* 悬停时颜色加深 */
 }
 
+/* 状态框，用于显示 JSON 输出 */
 #status {
-    margin-top: 20px;                     /* 上方留空 20px */
-    padding: 10px;                        /* 内部留白 10px */
-    background: #fff;                     /* 背景为白色，突显和主体的区别 */
-    border-radius: 5px;                   /* 圆角 */
-    display: inline-block;                /* 根据内容宽度显示，同时支持设置宽度 */
-    min-width: 300px;                     /* 最少宽度 300px，避免太窄 */
-    text-align: left;                     /* 文本左对齐，方便阅读消息 */
-    border: 1px solid #ddd;               /* 浅灰边框 */
-    font-family: monospace;               /* 使用等宽字体，适合显示日志或状态信息 */
+    white-space: pre-wrap;                   /* 保留换行并自动换行 */
+    font-family: monospace;                  /* 使用等宽字体 */
+    border: 1px solid #ddd;                  /* 浅灰色边框 */
+    background-color: #fff;                  /* 白底 */
+    padding: 10px;
+    margin: 10px 0;
+    width: 400px;                             /* 固定宽度 */
+    min-height: 100px;                        /* 最小高度 */
+    text-align: left;                         /* 左对齐方便阅读日志 */
+}
+
+/* 信息框（任务提示） */
+.output-box {
+    border: 1px solid #ccc;                   /* 浅灰色边框 */
+    background-color: #fff;                   /* 白底 */
+    padding: 10px;
+    width: 400px;
+    min-height: 50px;
+    font-size: 14px;
+    text-align: center;                       /* 信息居中显示 */
+}
+
+/* 图片显示框 */
+img {
+    margin-top: 20px;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    display: block;                            /* 初始不显示，等有结果时再显示 */
+}
+
+/* 信息与图片并排显示容器 */
+.info-image-container {
+    display: flex;              /* 并排显示元素 */
+    justify-content: flex-start; /* 从左到右排列，可以改成 space-around / space-between */
+    align-items: flex-start;    /* 顶端对齐 */
+    gap: 30px;                  /* 元素间距 */
+    margin-top: 45px;  /* 加上与上方内容的间距 */
+}
+
+/* 信息框样式 */
+#info_display {
+    flex: 1;                    /* 自动占满剩余空间 */
+    border: 1px solid #ccc;     /* 边框 */
+    padding: 10px;              /* 内边距 */
+    background-color: #f9f9f9;  /* 背景色 */
+    min-height: 150px;          /* 最小高度，防止太短 */
+    overflow-wrap: break-word;  /* 自动换行 */
+}
+
+/* 图片显示样式 */
+#image_display {
+    max-width: 400px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.image-box {
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    text-align: center;
+    width: 600px;                 /* 固定每个框的宽度，让它们排成一行 */
+
+}
+
+.image-box img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #aaa;
 }

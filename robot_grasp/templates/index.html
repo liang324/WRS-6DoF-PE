@@ -1,32 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh">
 <head>
-    <meta charset="UTF-8"> <!-- 设置网页编码为 UTF-8，兼容中文 -->
-    <title>机械臂控制面板</title> <!-- 浏览器标签页标题 -->
-    <!-- 引入外部 CSS 样式 -->
+    <meta charset="UTF-8">
+    <title>机械臂控制面板</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='control.js') }}"></script>
 </head>
-
 <body>
-<h2>机械臂控制</h2>
 
-    <div class="control-buttons">
-        <button onclick="sendInit()">初始化机械臂</button>
-        <button onclick="sendCmd('00')">执行指令 00</button>
-        <button onclick="sendCmd('11')">执行指令 11</button>
-        <button onclick="sendCmd('22')">拍摄</button>
+    <h1>机械臂控制面板</h1>
 
-        <button onclick="sendCmd('q')">退出控制</button>
+    <!-- 按钮区 -->
+    <div>
+        <button onclick="sendInit()">1.机械臂初始化</button>
+        <button onclick="sendReset()">2.机械臂复位</button>
+        <button onclick="sendMove()">3.机械臂移动</button>
+        <button onclick="sendCaptureKinect()">4.Kinect拍摄</button>
+        <button onclick="sendDetectKinect()">5.yolo全局目标检测</button>
+        <button onclick="sendRobotAutoMove()">6.自动移动到目标物体</button>
+{#        <button onclick="sendDetectKinect()">7.yolo全局目标检测</button>#}
+{#        <button onclick="sendDetectKinect()">8.yolo全局目标检测</button>#}
     </div>
 
-    <h3>状态输出</h3>
-    <pre id="status">等待操作...</pre> <!-- 用于输出后端返回的状态 -->
 
-    <!-- 引入外部 JS 文件 -->
-    <script src="{{ url_for('static', filename='control.js') }}"></script>
+    <!-- kinect图像显示区 -->
+    <div class="info-image-container">
+        <div class="image-box">
+            <h4>Kinect 拍摄的全景图像</h4>
+            <img id="kinect_image" src="" alt="Kinect 全景图像" />
+        </div>
+
+        <div class="image-box">
+            <h4>YOLO 目标检测结果图像</h4>
+            <img id="yolo_detect_image" src="" alt="YOLO 检测结果图像" />
+        </div>
+
+    </div>
+
+
+    <!-- 信息显示框 -->
+    <div class="info-image-container">
+        <h3>状态显示</h3>
+        <div id="status" class="output-box">等待操作...</div>
+        <h3>信息显示</h3>
+        <div id="info_display" class="output-box">等待操作...</div>
+    </div>
+
+
+
 
 </body>
-
 </html>
